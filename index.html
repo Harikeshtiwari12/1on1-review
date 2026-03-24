@@ -801,13 +801,13 @@ function saveRec(){
   if(selEmp===null){alert('Please select an employee first.');return;}
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
   if(pa===null||ca===null){alert('Please rate at least one performance question and one culture question.');return;}
-  if(!notes||notes.trim().length<20){
-    const ta=document.getElementById('review-notes');
+  const ta=document.getElementById('review-notes');
+  notes=ta.value; // always sync from DOM before validating
+  if(notes.trim().length<20){
     ta.focus();
     ta.style.borderColor='#E24B4A';
     ta.style.boxShadow='0 0 0 3px rgba(226,75,74,0.15)';
-    ta.placeholder='Required — add detailed observations, action items, or follow-ups (min 20 characters)';
-    alert('Manager notes are required. Please add your observations before saving.');
+    alert('Manager notes are required. Please add detailed observations before saving (minimum 20 characters).');
     return;
   }
   const d=depts[selDept],m=d.members[selEmp],key=getOutcome(pa,ca),o=OUTCOMES[key];
