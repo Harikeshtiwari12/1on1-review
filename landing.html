@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People OS · 10x Growth · TranZact</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0f0c;
+  --surface:#1c1a1a;
+  --surface2:#242424;
+  --accent:#da5d37;
+  --accent2:#df7afe;
+  --green:rgb(39,133,137);
+  --text:#eaece5;
+  --muted:#858a8e;
+  --border:rgba(255,255,255,0.08);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;background:rgba(28,26,26,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);border-bottom-left-radius:0;border-bottom-right-radius:0}
+.nav-inner{max-width:1100px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.nav-logo img{height:28px;filter:brightness(1.1)}
+.nav-brand{font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.04em}
+.nav-brand span{color:var(--accent)}
+.nav-pill{font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;background:rgba(218,93,55,0.12);border:1px solid rgba(218,93,55,0.3);color:var(--accent);letter-spacing:0.05em;text-transform:uppercase}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 2rem 80px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg-img{width:100%;height:100%;object-fit:cover;opacity:0.08;filter:saturate(0.4)}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(218,93,55,0.18) 0%,transparent 70%);pointer-events:none}
+.hero-glow2{position:absolute;bottom:10%;right:10%;width:400px;height:300px;background:radial-gradient(ellipse,rgba(223,122,254,0.1) 0%,transparent 70%);pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:780px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);background:rgba(218,93,55,0.1);border:1px solid rgba(218,93,55,0.25);padding:6px 16px;border-radius:20px;margin-bottom:2rem}
+.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+h1{font-size:clamp(2.4rem,5.5vw,4rem);font-weight:900;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.5rem;color:#fff}
+h1 .highlight{color:var(--accent)}
+h1 .highlight2{color:var(--accent2)}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:var(--muted);line-height:1.7;max-width:600px;margin:0 auto 2.5rem;font-weight:500}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border-radius:12px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;text-decoration:none;letter-spacing:0.03em;transition:all 0.2s;border:none;cursor:pointer}
+.hero-cta:hover{background:#c44e2b;transform:translateY(-1px);box-shadow:0 8px 32px rgba(218,93,55,0.35)}
+.hero-cta .arrow{font-size:18px;transition:transform 0.2s}
+.hero-cta:hover .arrow{transform:translateX(4px)}
+.hero-stats{display:flex;gap:2rem;justify-content:center;margin-top:4rem;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:2rem;font-weight:900;color:#fff}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;font-weight:600}
+
+/* MARQUEE */
+.marquee-wrap{padding:2rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;background:rgba(255,255,255,0.015)}
+.marquee-track{display:inline-flex;gap:3rem;animation:marquee 30s linear infinite}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.marquee-item{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em}
+.marquee-item span{color:var(--accent);margin-right:1rem}
+
+/* SECTION */
+.section{padding:100px 2rem;max-width:1100px;margin:0 auto}
+.section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:800;line-height:1.2;color:#fff;margin-bottom:1rem;letter-spacing:-0.02em}
+.section-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:560px;font-weight:500}
+
+/* WHY SECTION */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:3rem}
+.why-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.75rem;transition:all 0.2s;position:relative;overflow:hidden}
+.why-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s}
+.why-card:hover{border-color:rgba(218,93,55,0.3);transform:translateY(-2px)}
+.why-card:hover::before{opacity:1}
+.why-icon{font-size:2rem;margin-bottom:1rem}
+.why-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
+.why-desc{font-size:13px;color:var(--muted);line-height:1.7;font-weight:500}
+
+/* QUOTES */
+.quotes-section{padding:100px 2rem;background:linear-gradient(180deg,var(--bg) 0%,rgba(28,26,26,0.5) 50%,var(--bg) 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.quotes-inner{max-width:1100px;margin:0 auto}
+.quotes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:3rem}
+.quote-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative}
+.quote-mark{font-size:3rem;font-weight:900;color:var(--accent);opacity:0.4;line-height:1;margin-bottom:0.5rem;font-family:Georgia,serif}
+.quote-text{font-size:14px;color:var(--text);line-height:1.75;font-weight:500;font-style:italic;margin-bottom:1.25rem}
+.quote-author{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em}
+.quote-role{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+
+/* PHOTO STRIP */
+.photo-strip{padding:0 2rem;max-width:1100px;margin:0 auto 80px}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;border-radius:16px;overflow:hidden}
+.photo-grid img{width:100%;height:200px;object-fit:cover;filter:saturate(0.7) brightness(0.75);transition:all 0.3s}
+.photo-grid img:hover{filter:saturate(1) brightness(0.9);transform:scale(1.02)}
+
+/* DASHBOARD ACCESS */
+.access-section{padding:80px 2rem 120px;max-width:1100px;margin:0 auto}
+.access-header{text-align:center;margin-bottom:3rem}
+.leaders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.leader-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;text-decoration:none;color:inherit;display:block;transition:all 0.2s;position:relative;overflow:hidden}
+.leader-card::after{content:'→';position:absolute;top:1.5rem;right:1.5rem;font-size:18px;color:var(--muted);transition:all 0.2s}
+.leader-card:hover{border-color:rgba(218,93,55,0.4);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.leader-card:hover::after{color:var(--accent);transform:translateX(4px)}
+.leader-card.admin{border-color:rgba(223,122,254,0.2)}
+.leader-card.admin::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.leader-card.admin:hover{border-color:rgba(223,122,254,0.5)}
+.lc-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:5px;margin-bottom:10px}
+.lc-badge.admin{background:rgba(223,122,254,0.1);color:var(--accent2);border:1px solid rgba(223,122,254,0.2)}
+.lc-badge.leader{background:rgba(218,93,55,0.1);color:var(--accent);border:1px solid rgba(218,93,55,0.2)}
+.lc-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.lc-dept{font-size:12px;color:var(--muted);font-weight:500}
+.lc-access{font-size:11px;color:var(--green);margin-top:10px;font-weight:600}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2.5rem 2rem;text-align:center}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{display:flex;align-items:center;gap:8px}
+.footer-logo img{height:22px;opacity:0.7}
+.footer-text{font-size:12px;color:var(--muted);font-weight:500}
+.footer-right{font-size:11px;color:var(--muted)}
+
+@media(max-width:600px){
+  .photo-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-stats{gap:1.5rem}
+  .footer-inner{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <img src="https://framerusercontent.com/images/3Os0nzhDtlh0GvZvRcOG0IXDs4.svg" alt="TranZact">
+      <div class="nav-brand">10x Growth &nbsp;<span>·</span>&nbsp; People OS</div>
+    </div>
+    <div class="nav-pill">Monthly 1-on-1</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg">
+    <img class="hero-bg-img" src="https://framerusercontent.com/images/65dOYGmWYWe5kGZsIZNwufOakw.jpg" alt="">
+  </div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><div class="dot"></div>Monthly Review Dashboard · 10x Growth</div>
+    <h1>Your team won't <span class="highlight">10x</span><br>if you don't know where<br>they're <span class="highlight2">stuck</span>.</h1>
+    <p class="hero-sub">Great leaders don't guess — they review. Your monthly 1-on-1 dashboard gives you the clarity to coach, develop, and elevate every person on your team.</p>
+    <a href="#access" class="hero-cta">Open My Dashboard <span class="arrow">→</span></a>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">7</div><div class="stat-lbl">Departments</div></div>
+      <div class="stat"><div class="stat-num">50+</div><div class="stat-lbl">Team Members</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Outcomes Tracked</div></div>
+      <div class="stat"><div class="stat-num">15</div><div class="stat-lbl">Data Points / Review</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item"><span>✦</span>Performance · Culture · Outcome</span>
+    <span class="marquee-item"><span>✦</span>Rockstar · WIP · PIP · Exit</span>
+    <span class="marquee-item"><span>✦</span>Monthly Cadence · All Teams</span>
+    <span class="marquee-item"><span>✦</span>Role-based Questions · 5-Star Scoring</span>
+    <span class="marquee-item"><span>✦</span>Logged to Google Sheets · Real-time</span>
+    <span class="marquee-item"><span>✦</span>Performance · Culture · Outcome</span>
+    <span class="marquee-item"><span>✦</span>Rockstar · WIP · PIP · Exit</span>
+    <span class="marquee-item"><span>✦</span>Monthly Cadence · All Teams</span>
+    <span class="marquee-item"><span>✦</span>Role-based Questions · 5-Star Scoring</span>
+    <span class="marquee-item"><span>✦</span>Logged to Google Sheets · Real-time</span>
+  </div>
+</div>
+
+<!-- WHY SECTION -->
+<div class="section">
+  <div class="section-label">Why it matters</div>
+  <div class="section-title">Stop managing in the dark.<br>Start leading with data.</div>
+  <p class="section-sub">The best leaders at 10x Growth don't wait for problems to surface — they schedule the conversation that surfaces them.</p>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon">🎯</div>
+      <div class="why-title">Role-specific questions</div>
+      <div class="why-desc">Every question is tailored to the exact role. No generic check-ins. Ask what actually matters for each person's function.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">📊</div>
+      <div class="why-title">Performance + Culture scores</div>
+      <div class="why-desc">Two dimensions. One clear outcome — Rockstar, WIP, PIP, or Exit. Know exactly where each person stands this month.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔒</div>
+      <div class="why-title">Your team. Only yours.</div>
+      <div class="why-desc">Each leader sees only their department. Your reviews are yours. No cross-visibility, no noise from other teams.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Syncs to Google Sheets</div>
+      <div class="why-desc">Every review is logged in real-time to a central sheet. Full history, exportable CSVs, zero manual tracking.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔁</div>
+      <div class="why-title">Monthly cadence built in</div>
+      <div class="why-desc">Period selector, duplicate warnings, edit history — the tool is designed to make monthly reviews a habit, not a chore.</div>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">💬</div>
+      <div class="why-title">Manager notes captured</div>
+      <div class="why-desc">Add context, action items, and observations. Every review is a record — not just a score, but a story.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO STRIP -->
+<div class="photo-strip">
+  <div class="photo-grid">
+    <img src="https://framerusercontent.com/images/65dOYGmWYWe5kGZsIZNwufOakw.jpg" alt="">
+    <img src="https://framerusercontent.com/images/EhwggOUyg4zEee9iP2rxqmWLYyo.jpg" alt="">
+    <img src="https://framerusercontent.com/images/CMnZQqqHlobPfspSjKgw4ajG0U.jpg" alt="">
+    <img src="https://framerusercontent.com/images/IsBCAtrPkzqt9u9duPkAiN5dvhw.jpg" alt="">
+  </div>
+</div>
+
+<!-- QUOTES -->
+<div class="quotes-section">
+  <div class="quotes-inner">
+    <div class="section-label">On people & leadership</div>
+    <div class="section-title">Words that drive<br>10x leaders forward.</div>
+    <div class="quotes-grid">
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">You don't build a business — you build people, and then people build the business.</div>
+        <div class="quote-author">Zig Ziglar</div>
+        <div class="quote-role">Author & Motivational Speaker</div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">Your most important work as a leader is not to do the work yourself — it's to develop others who can.</div>
+        <div class="quote-author">Sheryl Sandberg</div>
+        <div class="quote-role">COO, Meta</div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">Feedback is the breakfast of champions. Without it, your people are running blind — and so are you.</div>
+        <div class="quote-author">Ken Blanchard</div>
+        <div class="quote-role">Leadership Author</div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">The speed of the team is the speed of the leader. If you're not reviewing your people, you're not leading them.</div>
+        <div class="quote-author">Robin Sharma</div>
+        <div class="quote-role">Author, The 5 AM Club</div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">A leader's job is not to do the work for others — it's to help others figure out how to do it better themselves.</div>
+        <div class="quote-author">Simon Sinek</div>
+        <div class="quote-role">Author, Start With Why</div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-mark">"</div>
+        <div class="quote-text">Average managers measure performance once a year. Great managers do it every month — while it still matters.</div>
+        <div class="quote-author">Andy Grove</div>
+        <div class="quote-role">Former CEO, Intel</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD ACCESS -->
+<div class="access-section" id="access">
+  <div class="access-header">
+    <div class="section-label" style="text-align:center">Your personal dashboard</div>
+    <div class="section-title" style="text-align:center">Select your name.<br>Start reviewing.</div>
+    <p class="section-sub" style="text-align:center;margin:1rem auto 0">Each link is private to you. You'll only see your team's reviews — no one else's.</p>
+  </div>
+  <div class="leaders-grid">
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#ritesh" class="leader-card admin" target="_blank">
+      <div class="lc-badge admin">Admin · All Teams</div>
+      <div class="lc-name">Ritesh Kumar</div>
+      <div class="lc-dept">CEO · 10x Growth</div>
+      <div class="lc-access">✓ Full access — all departments</div>
+    </a>
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#sharad" class="leader-card admin" target="_blank">
+      <div class="lc-badge admin">Admin · All Teams</div>
+      <div class="lc-name">Sharad Sen Sharma</div>
+      <div class="lc-dept">Co-Founder · Product</div>
+      <div class="lc-access">✓ Full access — all departments</div>
+    </a>
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#rohan" class="leader-card admin" target="_blank">
+      <div class="lc-badge admin">Admin · All Teams</div>
+      <div class="lc-name">Rohan Sen Sharma</div>
+      <div class="lc-dept">Co-Founder · Engineering</div>
+      <div class="lc-access">✓ Full access — all departments</div>
+    </a>
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#atul" class="leader-card" target="_blank">
+      <div class="lc-badge leader">Leader</div>
+      <div class="lc-name">Atul Naharwara</div>
+      <div class="lc-dept">Head · Channel Partnerships</div>
+      <div class="lc-access">✓ Channel Partnerships team only</div>
+    </a>
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#adarsh" class="leader-card" target="_blank">
+      <div class="lc-badge leader">Leader</div>
+      <div class="lc-name">Adarsh Sikaria</div>
+      <div class="lc-dept">Head · Digital Sales</div>
+      <div class="lc-access">✓ Sales team only</div>
+    </a>
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#shabib" class="leader-card" target="_blank">
+      <div class="lc-badge leader">Leader</div>
+      <div class="lc-name">Shabib Karjikar</div>
+      <div class="lc-dept">Lead · Customer Experience</div>
+      <div class="lc-access">✓ Customer Experience team only</div>
+    </a>
+    <a href="https://harikeshtiwari12.github.io/1on1-review/#mudit" class="leader-card" target="_blank">
+      <div class="lc-badge leader">Leader</div>
+      <div class="lc-name">Mudit Sharma</div>
+      <div class="lc-dept">Head · Growth Marketing</div>
+      <div class="lc-access">✓ Growth Marketing team only</div>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <img src="https://framerusercontent.com/images/3Os0nzhDtlh0GvZvRcOG0IXDs4.svg" alt="TranZact">
+      <span class="footer-text">10x Growth · People OS</span>
+    </div>
+    <div class="footer-text">Monthly 1-on-1 Review Dashboard</div>
+    <div class="footer-right">Built for leaders who take people seriously.</div>
+  </div>
+</footer>
+
+</body>
+</html>
