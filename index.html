@@ -220,8 +220,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
       </div>
 
       <div class="notes-card">
-        <div class="notes-lbl">Manager notes &amp; observations</div>
-        <textarea id="review-notes" placeholder="Add any context, observations, agreed action items, or follow-ups from this 1-on-1..." oninput="onNotesChange()"></textarea>
+        <div class="notes-lbl">Manager notes &amp; observations <span style="color:#E24B4A;font-weight:700">* Required</span></div>
+        <textarea id="review-notes" placeholder="Required — add detailed observations, agreed action items, coaching points, or follow-ups from this 1-on-1..." oninput="onNotesChange()"></textarea>
       </div>
 
       <div class="btn-row">
@@ -775,7 +775,11 @@ function rateCulture(qi,val,btn){
   btn.classList.add('s'+val);
   updateScore();
 }
-function onNotesChange(){notes=document.getElementById('review-notes').value;}
+function onNotesChange(){
+  notes=document.getElementById('review-notes').value;
+  const ta=document.getElementById('review-notes');
+  if(notes.trim().length>=20){ta.style.borderColor='';ta.style.boxShadow='';}
+}
 
 function updateScore(){
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
@@ -797,6 +801,15 @@ function saveRec(){
   if(selEmp===null){alert('Please select an employee first.');return;}
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
   if(pa===null||ca===null){alert('Please rate at least one performance question and one culture question.');return;}
+  if(!notes||notes.trim().length<20){
+    const ta=document.getElementById('review-notes');
+    ta.focus();
+    ta.style.borderColor='#E24B4A';
+    ta.style.boxShadow='0 0 0 3px rgba(226,75,74,0.15)';
+    ta.placeholder='Required — add detailed observations, action items, or follow-ups (min 20 characters)';
+    alert('Manager notes are required. Please add your observations before saving.');
+    return;
+  }
   const d=depts[selDept],m=d.members[selEmp],key=getOutcome(pa,ca),o=OUTCOMES[key];
   const pk=periodKey(selMonth,selYear);
   const record={
