@@ -108,6 +108,53 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .notes-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
 @media(max-width:500px){.score-grid{grid-template-columns:1fr}.matrix-grid{grid-template-columns:1fr}.saved-item-top{flex-wrap:wrap}}
 
+/* ── Micro-interactions ── */
+@keyframes rb-pop{0%{transform:scale(1)}40%{transform:scale(1.22)}70%{transform:scale(0.94)}100%{transform:scale(1)}}
+.rb.popping{animation:rb-pop 0.22s ease}
+@keyframes score-glow-perf{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(55,138,221,0.18)}}
+@keyframes score-glow-cult{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(127,119,221,0.18)}}
+.score-card.perf.pulsing{animation:score-glow-perf 0.5s ease}
+.score-card.culture.pulsing{animation:score-glow-cult 0.5s ease}
+@keyframes outcome-in{from{opacity:0;transform:translateY(5px) scale(0.96)}to{opacity:1;transform:none}}
+.outcome-badge{animation:outcome-in 0.28s ease}
+
+/* ── Toast notifications ── */
+#toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.18);opacity:0;transform:translateY(10px);transition:opacity 0.22s ease,transform 0.22s ease;max-width:340px;display:flex;align-items:center;gap:9px;line-height:1.4}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:#085041}
+.toast.error{background:#791F1F}
+.toast.warn{background:#633806}
+
+/* ── Review progress bar ── */
+.review-progress{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:12px}
+.review-progress.show{display:flex}
+.rp-label{font-size:12px;font-weight:600;color:#555;white-space:nowrap}
+.rp-bar-wrap{flex:1;height:6px;background:#eee;border-radius:4px;overflow:hidden}
+.rp-bar-fill{height:100%;border-radius:4px;background:#1D9E75;transition:width 0.45s ease}
+.rp-count{font-size:12px;font-weight:700;color:#1a1a1a;white-space:nowrap}
+.full-team-badge{background:#E1F5EE;border:1px solid #1D9E75;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700;color:#085041;text-align:center;margin-bottom:12px;display:none}
+.full-team-badge.show{display:block}
+
+/* ── Employee history badges ── */
+.emp-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:5px;letter-spacing:0.03em}
+.eb-consistent{background:#1a1a1a;color:#fff}
+.eb-rising{background:#E6F1FB;color:#0C447C}
+.eb-risk{background:#FCEBEB;color:#791F1F}
+.eb-turnaround{background:#EAF3DE;color:#27500A}
+
+/* ── Notes character counter ── */
+.notes-counter{font-size:11px;margin-top:5px;font-weight:600;transition:color 0.2s}
+.notes-counter.ok{color:#1D9E75}
+.notes-counter.short{color:#aaa}
+.notes-counter.warn{color:#E24B4A}
+
+/* ── Trajectory arrows ── */
+.traj{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:6px;vertical-align:middle}
+.traj.up{background:#E1F5EE;color:#085041}
+.traj.down{background:#FCEBEB;color:#791F1F}
+.traj.same{background:#f0f0f0;color:#888}
+
 /* ── Login screen ── */
 #login-screen{position:fixed;inset:0;background:#f5f5f3;z-index:999;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
 .login-wrap{width:100%;max-width:600px}
@@ -182,6 +229,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
     </div>
 
     <div class="sect-hd">Select employee</div>
+    <div class="review-progress" id="review-progress">
+      <span class="rp-label">This month:</span>
+      <div class="rp-bar-wrap"><div class="rp-bar-fill" id="rp-fill" style="width:0%"></div></div>
+      <span class="rp-count" id="rp-count">0 / 0</span>
+    </div>
+    <div class="full-team-badge" id="full-team-badge">✅ Full team reviewed this month!</div>
     <div id="dup-warn" class="dup-warn">
       ⚠️ <span id="dup-warn-text"></span>
     </div>
@@ -222,6 +275,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
       <div class="notes-card">
         <div class="notes-lbl">Manager notes &amp; observations <span style="color:#E24B4A;font-weight:700">* Required</span></div>
         <textarea id="review-notes" placeholder="Required — add detailed observations, agreed action items, coaching points, or follow-ups from this 1-on-1..." oninput="onNotesChange()"></textarea>
+        <div class="notes-counter short" id="notes-counter">0 characters · 20 minimum required</div>
       </div>
 
       <div class="btn-row">
@@ -540,6 +594,62 @@ const users=[
   {name:'Mudit Sharma',      title:'Growth Marketing',     deptIndex:5,  slug:'mudit'},
 ];
 
+// ── Toast notifications ────────────────────────────────────────────────────
+function showToast(msg,type='success'){
+  const wrap=document.getElementById('toast-wrap');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  const icon={success:'✓',error:'✕',warn:'⚠'}[type]||'✓';
+  t.innerHTML=`<span style="font-size:15px">${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),280);},3500);
+}
+
+// ── Employee history badge ─────────────────────────────────────────────────
+function getEmpBadge(empName,deptName){
+  const rank={rockstar:4,wip:3,pip:2,exit:1};
+  const hist=saved.filter(s=>s.name===empName&&s.dept===deptName)
+    .sort((a,b)=>b.period.localeCompare(a.period));
+  if(!hist.length)return'';
+  const outcomes=hist.slice(0,3).map(h=>h.outcome);
+  if(outcomes.length>=3&&outcomes.every(o=>o==='rockstar'))
+    return'<div class="emp-badge eb-consistent">🏆 Consistent Rockstar</div>';
+  if(outcomes.length>=2&&(outcomes[1]==='pip'||outcomes[1]==='exit')&&outcomes[0]==='rockstar')
+    return'<div class="emp-badge eb-turnaround">🔄 Turnaround</div>';
+  if(outcomes.length>=2&&rank[outcomes[0]]>rank[outcomes[1]])
+    return'<div class="emp-badge eb-rising">📈 On the Rise</div>';
+  if(outcomes.length>=2&&(outcomes[0]==='pip'||outcomes[0]==='exit')&&(outcomes[1]==='pip'||outcomes[1]==='exit'))
+    return'<div class="emp-badge eb-risk">⚠ Needs Attention</div>';
+  return'';
+}
+
+// ── Trajectory arrow ───────────────────────────────────────────────────────
+function getTraj(s){
+  const rank={rockstar:4,wip:3,pip:2,exit:1};
+  const prev=saved
+    .filter(r=>r.name===s.name&&r.dept===s.dept&&r.id!==s.id&&r.period.localeCompare(s.period)<0)
+    .sort((a,b)=>b.period.localeCompare(a.period))[0];
+  if(!prev)return'';
+  const diff=rank[s.outcome]-rank[prev.outcome];
+  if(diff>0)return`<span class="traj up">↑ from ${prev.outcomeLabel}</span>`;
+  if(diff<0)return`<span class="traj down">↓ from ${prev.outcomeLabel}</span>`;
+  return`<span class="traj same">→ same</span>`;
+}
+
+// ── Review progress ────────────────────────────────────────────────────────
+function renderProgress(){
+  const d=depts[selDept];
+  const pk=periodKey(selMonth,selYear);
+  const total=d.members.length;
+  const done=d.members.filter(m=>saved.some(s=>s.dept===d.name&&s.name===m.name&&s.period===pk)).length;
+  const prog=document.getElementById('review-progress');
+  prog.classList.add('show');
+  document.getElementById('rp-fill').style.width=Math.round((done/total)*100)+'%';
+  document.getElementById('rp-count').textContent=done+' / '+total+' reviewed';
+  document.getElementById('full-team-badge').classList.toggle('show',done===total&&total>0);
+}
+
 // ── State ──────────────────────────────────────────────────────────────────
 let currentUser=null;
 let perfRatings=[0,0,0],cultureRatings=[0,0],selEmp=null,selDept=0;
@@ -705,12 +815,15 @@ function renderEmpGrid(){
   document.getElementById('emp-grid').innerHTML=d.members.map((m,i)=>{
     const isDone=saved.some(s=>s.dept===d.name&&s.name===m.name&&s.period===pk);
     const isActive=selEmp===i;
+    const badge=getEmpBadge(m.name,d.name);
     return `<button class="emp-btn${isActive?' active':''}${isDone&&!isActive?' done-month':''}" onclick="selectEmp(${i})">
       ${isDone&&!isActive?'<div class="done-dot" title="Reviewed this period"></div>':''}
       <div class="emp-name">${m.name}</div>
       <div class="emp-role">${m.role}</div>
+      ${badge}
     </button>`;
   }).join('');
+  renderProgress();
 }
 
 function rbl(r){return['Needs improvement','Developing','Meets expectations','Exceeds expectations','10x ready'][r-1];}
@@ -745,6 +858,7 @@ function selectEmp(i){
   document.getElementById('q-head').textContent='Questions for '+m.name+' · '+m.role;
   document.getElementById('q-section').style.display='block';
   document.getElementById('review-notes').value=notes;
+  onNotesChange();
 
   const roleQs=roleQuestionsMap[m.role]||d.qs;
   document.getElementById('q-perf-wrap').innerHTML=roleQs.map((q,qi)=>`<div class="q-card perf">
@@ -766,27 +880,39 @@ function selectEmp(i){
 function ratePerf(qi,val,btn){
   perfRatings[qi]=val;
   btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
-  btn.classList.add('s'+val);
-  updateScore();
+  btn.classList.add('s'+val,'popping');
+  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
+  updateScore('perf');
 }
 function rateCulture(qi,val,btn){
   cultureRatings[qi]=val;
   btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
-  btn.classList.add('s'+val);
-  updateScore();
+  btn.classList.add('s'+val,'popping');
+  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
+  updateScore('culture');
 }
 function onNotesChange(){
-  notes=document.getElementById('review-notes').value;
   const ta=document.getElementById('review-notes');
-  if(notes.trim().length>=20){ta.style.borderColor='';ta.style.boxShadow='';}
+  notes=ta.value;
+  const len=notes.trim().length;
+  const counter=document.getElementById('notes-counter');
+  if(len===0){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
+  else if(len<20){counter.textContent=len+' characters · '+(20-len)+' more needed';counter.className='notes-counter warn';}
+  else{counter.textContent=len+' characters ✓';counter.className='notes-counter ok';}
+  if(len>=20){ta.style.borderColor='';ta.style.boxShadow='';}
 }
 
-function updateScore(){
+function updateScore(pulseSide){
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
   if(pa!==null){document.getElementById('sc-perf').textContent=pa.toFixed(1)+' / 5';document.getElementById('prog-perf').style.width=Math.round((pa/5)*100)+'%';}
   else{document.getElementById('sc-perf').textContent='—';document.getElementById('prog-perf').style.width='0%';}
   if(ca!==null){document.getElementById('sc-cult').textContent=ca.toFixed(1)+' / 5';document.getElementById('prog-cult').style.width=Math.round((ca/5)*100)+'%';}
   else{document.getElementById('sc-cult').textContent='—';document.getElementById('prog-cult').style.width='0%';}
+  // Pulse the relevant score card
+  if(pulseSide){
+    const card=document.querySelector('.score-card.'+(pulseSide==='perf'?'perf':'culture'));
+    if(card){card.classList.add('pulsing');card.addEventListener('animationend',()=>card.classList.remove('pulsing'),{once:true});}
+  }
   const ow=document.getElementById('outcome-wrap');
   if(pa!==null&&ca!==null){
     const key=getOutcome(pa,ca),o=OUTCOMES[key];
@@ -798,16 +924,16 @@ function updateScore(){
 }
 
 function saveRec(){
-  if(selEmp===null){alert('Please select an employee first.');return;}
+  if(selEmp===null){showToast('Please select an employee first.','warn');return;}
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
-  if(pa===null||ca===null){alert('Please rate at least one performance question and one culture question.');return;}
+  if(pa===null||ca===null){showToast('Please rate at least one performance and one culture question.','warn');return;}
   const ta=document.getElementById('review-notes');
-  notes=ta.value; // always sync from DOM before validating
+  notes=ta.value;
   if(notes.trim().length<20){
     ta.focus();
     ta.style.borderColor='#E24B4A';
     ta.style.boxShadow='0 0 0 3px rgba(226,75,74,0.15)';
-    alert('Manager notes are required. Please add detailed observations before saving (minimum 20 characters).');
+    showToast('Manager notes required — add at least 20 characters.','error');
     return;
   }
   const d=depts[selDept],m=d.members[selEmp],key=getOutcome(pa,ca),o=OUTCOMES[key];
@@ -830,9 +956,11 @@ function saveRec(){
     saved.push(record);
   }
   persist();
-  syncToSheet(record); // sync to Google Sheet
+  syncToSheet(record);
+  const isUpdate=!!editingId;
   resetForm();
   switchTab(1);
+  showToast((isUpdate?'Updated':'Saved')+' · '+record.name+' · '+o.label,'success');
 }
 
 function cancelEdit(){
@@ -846,6 +974,10 @@ function resetForm(){
   document.getElementById('save-btn').textContent='Save record';
   document.getElementById('save-btn').className='save-btn';
   document.getElementById('cancel-btn').style.display='none';
+  const counter=document.getElementById('notes-counter');
+  if(counter){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
+  const ta=document.getElementById('review-notes');
+  if(ta){ta.style.borderColor='';ta.style.boxShadow='';}
   renderEmpGrid();
   checkDupWarn();
 }
@@ -883,6 +1015,7 @@ function deleteRecord(id){
   persist();
   populatePeriodFilter();
   renderSaved();
+  showToast('Record deleted · '+rec.name,'warn');
 }
 
 // ── Saved records panel ─────────────────────────────────────────────────────
@@ -932,7 +1065,7 @@ function renderSaved(){
           </div>
         </div>
         <div class="si-scores">Perf ${s.perfScore}<br>Cult ${s.cultScore}</div>
-        <div><span class="si-badge ${s.outcomeCls}">${s.outcomeLabel}</span></div>
+        <div><span class="si-badge ${s.outcomeCls}">${s.outcomeLabel}</span>${getTraj(s)}</div>
       </div>
       ${s.notes?`<div class="si-note">${escHtml(s.notes)}</div>`:''}
       <div class="si-actions">
@@ -948,10 +1081,10 @@ function escHtml(s){
 
 // ── CSV Export ──────────────────────────────────────────────────────────────
 function exportCSV(){
-  if(!saved.length){alert('No records to export.');return;}
+  if(!saved.length){showToast('No records to export.','warn');return;}
   const headers=['Period','Employee','Role','Department','Perf Q1','Perf Q2','Perf Q3','Culture Q1','Culture Q2','Avg Performance','Avg Culture','Outcome','Notes','Date Reviewed'];
   const exportable=currentUser.isAdmin?saved:saved.filter(s=>s.dept===depts[currentUser.deptIndex].name);
-  if(!exportable.length){alert('No records to export.');return;}
+  if(!exportable.length){showToast('No records to export.','warn');return;}
   const rows=exportable.map(s=>[
     s.period, s.name, s.role, s.dept,
     s.perfRatings[0]||'', s.perfRatings[1]||'', s.perfRatings[2]||'',
@@ -1008,5 +1141,6 @@ buildLoginScreen();
   }catch(e){}
 })();
 </script>
+<div id="toast-wrap"></div>
 </body>
 </html>
