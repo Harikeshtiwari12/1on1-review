@@ -57,7 +57,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .outcome-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:10px;font-size:16px;font-weight:700;margin-bottom:8px}
 .o-rockstar{background:#E1F5EE;color:#085041;border:1px solid #1D9E75}
 .o-wip{background:#E6F1FB;color:#0C447C;border:1px solid #378ADD}
-/* o-pip removed — merged into wip */
+.o-pip{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
 .o-exit{background:#FCEBEB;color:#791F1F;border:1px solid #E24B4A}
 .outcome-desc{font-size:12px;color:#888;display:block}
 .note{font-size:11px;color:#bbb;margin-top:6px}
@@ -297,9 +297,13 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
           <div class="m-label">Rockstar</div>
           <div class="m-desc">Good Performance + Good Culture<br>Recognition &amp; Responsibilities</div>
         </div>
-        <div class="matrix-item o-wip" style="grid-column:span 2">
-          <div class="m-label">WIP (Work in Progress)</div>
-          <div class="m-desc">Either Performance or Culture is weak (one side &lt; 3.5) · 3-Month Development Plan</div>
+        <div class="matrix-item o-wip">
+          <div class="m-label">WIP</div>
+          <div class="m-desc">Good Performance + Weak Culture<br>3-Month Plan</div>
+        </div>
+        <div class="matrix-item o-pip">
+          <div class="m-label">Likeable Stars</div>
+          <div class="m-desc">Good Culture + Weak Performance<br>Coaching Plan</div>
         </div>
         <div class="matrix-item o-exit">
           <div class="m-label">Exit</div>
@@ -327,7 +331,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         <div class="lbl">Filter by outcome</div>
         <select id="filter-outcome" onchange="renderSaved()">
           <option value="">All outcomes</option>
-          <option>Rockstar</option><option>WIP</option><option>Exit</option>
+          <option>Rockstar</option><option>WIP</option><option>Likeable Stars</option><option>Exit</option>
         </select>
       </div>
       <div class="col">
@@ -586,7 +590,8 @@ const roleQuestionsMap={
 
 const OUTCOMES={
   rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
-  wip:{label:'WIP',desc:'One side strong, one side needs work — 3-Month Plan',cls:'o-wip'},
+  wip:{label:'WIP',desc:'Good Performance, Weak Culture — 3-Month Plan',cls:'o-wip'},
+  pip:{label:'Likeable Stars',desc:'Good Culture, Weak Performance — Coaching Plan',cls:'o-pip'},
   exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
 };
 
@@ -615,25 +620,25 @@ function showToast(msg,type='success'){
 
 // ── Employee history badge ─────────────────────────────────────────────────
 function getEmpBadge(empName,deptName){
-  const rank={rockstar:3,wip:2,exit:1};
+  const rank={rockstar:4,wip:3,pip:2,exit:1};
   const hist=saved.filter(s=>s.name===empName&&s.dept===deptName)
     .sort((a,b)=>b.period.localeCompare(a.period));
   if(!hist.length)return'';
-  const outcomes=hist.slice(0,3).map(h=>h.outcome==='pip'?'wip':h.outcome);
+  const outcomes=hist.slice(0,3).map(h=>h.outcome);
   if(outcomes.length>=3&&outcomes.every(o=>o==='rockstar'))
     return'<div class="emp-badge eb-consistent">🏆 Consistent Rockstar</div>';
-  if(outcomes.length>=2&&outcomes[1]==='exit'&&outcomes[0]==='rockstar')
+  if(outcomes.length>=2&&(outcomes[1]==='pip'||outcomes[1]==='exit')&&outcomes[0]==='rockstar')
     return'<div class="emp-badge eb-turnaround">🔄 Turnaround</div>';
-  if(outcomes.length>=2&&(rank[outcomes[0]]||1)>(rank[outcomes[1]]||1))
+  if(outcomes.length>=2&&rank[outcomes[0]]>rank[outcomes[1]])
     return'<div class="emp-badge eb-rising">📈 On the Rise</div>';
-  if(outcomes.length>=2&&outcomes[0]==='exit'&&outcomes[1]==='exit')
+  if(outcomes.length>=2&&(outcomes[0]==='pip'||outcomes[0]==='exit')&&(outcomes[1]==='pip'||outcomes[1]==='exit'))
     return'<div class="emp-badge eb-risk">⚠ Needs Attention</div>';
   return'';
 }
 
 // ── Trajectory arrow ───────────────────────────────────────────────────────
 function getTraj(s){
-  const rank={rockstar:3,wip:2,exit:1};
+  const rank={rockstar:4,wip:3,pip:2,exit:1};
   const prev=saved
     .filter(r=>r.name===s.name&&r.dept===s.dept&&r.id!==s.id&&r.period.localeCompare(s.period)<0)
     .sort((a,b)=>b.period.localeCompare(a.period))[0];
@@ -697,7 +702,7 @@ function syncFromSheet(){
       const avgC=parseFloat(get('avgculture'))||avgOf([cq1,cq2])||0;
       const outcomeLabel=get('outcome')||'';
       const ol=outcomeLabel.toLowerCase();
-      const outcomeKey=ol==='rockstar'?'rockstar':(ol==='exit'?'exit':'wip');
+      const outcomeKey=ol==='rockstar'?'rockstar':ol==='wip'?'wip':(ol==='likeable stars'||ol==='pip')?'pip':ol==='exit'?'exit':'wip';
       const o=OUTCOMES[outcomeKey]||OUTCOMES.exit;
       const record={
         id: uid(),
@@ -790,7 +795,7 @@ function syncToSheet(record){
 
 // ── Utils ──────────────────────────────────────────────────────────────────
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
-function getOutcome(pa,ca){const gp=pa>=3.5,gc=ca>=3.5;if(gp&&gc)return'rockstar';if(!gp&&!gc)return'exit';return'wip';}
+function getOutcome(pa,ca){const gp=pa>=3.5,gc=ca>=3.5;if(gp&&gc)return'rockstar';if(gp&&!gc)return'wip';if(!gp&&gc)return'pip';return'exit';}
 function avgOf(arr){const f=arr.filter(r=>r>0);return f.length?f.reduce((a,b)=>a+b,0)/f.length:null;}
 function periodKey(m,y){return`${MONTHS[m]} ${y}`;}
 function csvEscape(v){const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s;}
@@ -1172,13 +1177,13 @@ function renderSaved(){
   document.getElementById('saved-count').textContent=`${list.length} record${list.length!==1?'s':''}`;
   if(!list.length){w.innerHTML='<div class="empty">No records found.</div>';return;}
 
-  const counts={rockstar:0,wip:0,exit:0};
-  list.forEach(s=>{const o=s.outcome==='pip'?'wip':s.outcome;counts[o]=(counts[o]||0)+1;});
-  const wipTotal=counts.wip||0;
+  const counts={rockstar:0,wip:0,pip:0,exit:0};
+  list.forEach(s=>counts[s.outcome]=(counts[s.outcome]||0)+1);
   const sp='summary-pill';
   let summary=`<div style="margin-bottom:12px">
     ${counts.rockstar?`<span class="${sp} o-rockstar">Rockstar: ${counts.rockstar}</span>`:''}
-    ${wipTotal?`<span class="${sp} o-wip">WIP: ${wipTotal}</span>`:''}
+    ${counts.wip?`<span class="${sp} o-wip">WIP: ${counts.wip}</span>`:''}
+    ${counts.pip?`<span class="${sp} o-pip">Likeable Stars: ${counts.pip}</span>`:''}
     ${counts.exit?`<span class="${sp} o-exit">Exit: ${counts.exit}</span>`:''}
   </div>`;
 
@@ -1276,11 +1281,10 @@ function initApp(){
 }
 
 hydrate();
-// Migrate old PIP/Likeable Stars records to WIP
+// Migrate old PIP labels to Likeable Stars
 saved.forEach(s=>{
-  if(s.outcome==='pip'||s.outcomeLabel==='PIP'||s.outcomeLabel==='Likeable Stars'){
-    s.outcome='wip';s.outcomeLabel='WIP';s.outcomeCls='o-wip';
-    s.desc='One side strong, one side needs work — 3-Month Plan';
+  if(s.outcome==='pip'&&s.outcomeLabel==='PIP'){
+    s.outcomeLabel='Likeable Stars';s.outcomeCls='o-pip';
   }
 });
 persist();
