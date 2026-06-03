@@ -57,7 +57,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .outcome-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:10px;font-size:16px;font-weight:700;margin-bottom:8px}
 .o-rockstar{background:#E1F5EE;color:#085041;border:1px solid #1D9E75}
 .o-wip{background:#E6F1FB;color:#0C447C;border:1px solid #378ADD}
-.o-pip{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
+/* o-pip removed — merged into wip */
 .o-exit{background:#FCEBEB;color:#791F1F;border:1px solid #E24B4A}
 .outcome-desc{font-size:12px;color:#888;display:block}
 .note{font-size:11px;color:#bbb;margin-top:6px}
@@ -587,7 +587,6 @@ const roleQuestionsMap={
 const OUTCOMES={
   rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
   wip:{label:'WIP',desc:'One side strong, one side needs work — 3-Month Plan',cls:'o-wip'},
-  pip:{label:'WIP',desc:'One side strong, one side needs work — 3-Month Plan',cls:'o-wip'},
   exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
 };
 
@@ -616,25 +615,25 @@ function showToast(msg,type='success'){
 
 // ── Employee history badge ─────────────────────────────────────────────────
 function getEmpBadge(empName,deptName){
-  const rank={rockstar:4,wip:3,pip:2,exit:1};
+  const rank={rockstar:3,wip:2,exit:1};
   const hist=saved.filter(s=>s.name===empName&&s.dept===deptName)
     .sort((a,b)=>b.period.localeCompare(a.period));
   if(!hist.length)return'';
-  const outcomes=hist.slice(0,3).map(h=>h.outcome);
+  const outcomes=hist.slice(0,3).map(h=>h.outcome==='pip'?'wip':h.outcome);
   if(outcomes.length>=3&&outcomes.every(o=>o==='rockstar'))
     return'<div class="emp-badge eb-consistent">🏆 Consistent Rockstar</div>';
-  if(outcomes.length>=2&&(outcomes[1]==='pip'||outcomes[1]==='exit')&&outcomes[0]==='rockstar')
+  if(outcomes.length>=2&&outcomes[1]==='exit'&&outcomes[0]==='rockstar')
     return'<div class="emp-badge eb-turnaround">🔄 Turnaround</div>';
-  if(outcomes.length>=2&&rank[outcomes[0]]>rank[outcomes[1]])
+  if(outcomes.length>=2&&(rank[outcomes[0]]||1)>(rank[outcomes[1]]||1))
     return'<div class="emp-badge eb-rising">📈 On the Rise</div>';
-  if(outcomes.length>=2&&(outcomes[0]==='pip'||outcomes[0]==='exit')&&(outcomes[1]==='pip'||outcomes[1]==='exit'))
+  if(outcomes.length>=2&&outcomes[0]==='exit'&&outcomes[1]==='exit')
     return'<div class="emp-badge eb-risk">⚠ Needs Attention</div>';
   return'';
 }
 
 // ── Trajectory arrow ───────────────────────────────────────────────────────
 function getTraj(s){
-  const rank={rockstar:4,wip:3,pip:2,exit:1};
+  const rank={rockstar:3,wip:2,exit:1};
   const prev=saved
     .filter(r=>r.name===s.name&&r.dept===s.dept&&r.id!==s.id&&r.period.localeCompare(s.period)<0)
     .sort((a,b)=>b.period.localeCompare(a.period))[0];
@@ -1173,9 +1172,9 @@ function renderSaved(){
   document.getElementById('saved-count').textContent=`${list.length} record${list.length!==1?'s':''}`;
   if(!list.length){w.innerHTML='<div class="empty">No records found.</div>';return;}
 
-  const counts={rockstar:0,wip:0,pip:0,exit:0};
-  list.forEach(s=>counts[s.outcome]=(counts[s.outcome]||0)+1);
-  const wipTotal=(counts.wip||0)+(counts.pip||0);
+  const counts={rockstar:0,wip:0,exit:0};
+  list.forEach(s=>{const o=s.outcome==='pip'?'wip':s.outcome;counts[o]=(counts[o]||0)+1;});
+  const wipTotal=counts.wip||0;
   const sp='summary-pill';
   let summary=`<div style="margin-bottom:12px">
     ${counts.rockstar?`<span class="${sp} o-rockstar">Rockstar: ${counts.rockstar}</span>`:''}
