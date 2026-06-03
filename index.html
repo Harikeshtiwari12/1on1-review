@@ -108,15 +108,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .notes-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
 @media(max-width:500px){.score-grid{grid-template-columns:1fr}.matrix-grid{grid-template-columns:1fr}.saved-item-top{flex-wrap:wrap}}
 
-/* ── Micro-interactions ── */
-@keyframes rb-pop{0%{transform:scale(1)}40%{transform:scale(1.22)}70%{transform:scale(0.94)}100%{transform:scale(1)}}
-.rb.popping{animation:rb-pop 0.22s ease}
-@keyframes score-glow-perf{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(55,138,221,0.18)}}
-@keyframes score-glow-cult{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(127,119,221,0.18)}}
-.score-card.perf.pulsing{animation:score-glow-perf 0.5s ease}
-.score-card.culture.pulsing{animation:score-glow-cult 0.5s ease}
-@keyframes outcome-in{from{opacity:0;transform:translateY(5px) scale(0.96)}to{opacity:1;transform:none}}
-.outcome-badge{animation:outcome-in 0.28s ease}
+/* ── Micro-interactions removed per request ── */
 
 /* ── Toast notifications ── */
 #toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -293,11 +285,11 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         </div>
         <div class="matrix-item o-wip">
           <div class="m-label">WIP</div>
-          <div class="m-desc">Good Performance + Weak Culture<br>3-Month Plan to Rockstar</div>
+          <div class="m-desc">Good Performance + Weak Culture<br>3-Month Plan</div>
         </div>
         <div class="matrix-item o-pip">
-          <div class="m-label">PIP</div>
-          <div class="m-desc">Weak Performance + Good Culture<br>1-Month Warning</div>
+          <div class="m-label">Likeable Stars</div>
+          <div class="m-desc">Good Culture + Weak Performance<br>Coaching Plan</div>
         </div>
         <div class="matrix-item o-exit">
           <div class="m-label">Exit</div>
@@ -325,7 +317,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         <div class="lbl">Filter by outcome</div>
         <select id="filter-outcome" onchange="renderSaved()">
           <option value="">All outcomes</option>
-          <option>Rockstar</option><option>WIP</option><option>PIP</option><option>Exit</option>
+          <option>Rockstar</option><option>WIP</option><option>Likeable Stars</option><option>Exit</option>
         </select>
       </div>
       <div class="col">
@@ -348,7 +340,7 @@ const SHEET_URL='https://script.google.com/macros/s/AKfycbyiWdeYAB9OjP7hZ8AkjDFI
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const CULTURE_QS=[
   "When you disagree with a decision made above you — do you push back, stay silent, or find another way? Give me a real example of how you handled it.",
-  "Tell me about a time you helped a teammate who was struggling — without being asked to, and without getting credit for it."
+  "How do you communicate progress, blockers, and updates to your manager and teammates — proactively, or only when asked? Give me a specific example from this month where your communication made things better or worse."
 ];
 
 const depts=[
@@ -366,7 +358,7 @@ const depts=[
   {name:"Sales",leader:"Adarsh Sikaria",members:[
     {name:"Abhas Maheshwari",role:"Program Manager Digital Sales"},
     {name:"Abhishek Tiwari",role:"Growth Manager Digital Sales"},
-    {name:"Himanshu Jain",role:"Inside Sales Manager"},
+    {name:"Himanshu Jain",role:"Inside Sales"},
     {name:"Ankit Pandey",role:"Inside Sales"},
     {name:"Sakshi Goyal",role:"Inside Sales"},
     {name:"Jeet Popat",role:"Sales Development Representative"},
@@ -580,8 +572,8 @@ const roleQuestionsMap={
 
 const OUTCOMES={
   rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
-  wip:{label:'WIP',desc:'3-Month Plan to Rockstar',cls:'o-wip'},
-  pip:{label:'PIP',desc:'1-Month Warning',cls:'o-pip'},
+  wip:{label:'WIP',desc:'Good Performance, Weak Culture — 3-Month Plan',cls:'o-wip'},
+  pip:{label:'Likeable Stars',desc:'Good Culture, Weak Performance — Coaching Plan',cls:'o-pip'},
   exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
 };
 
@@ -882,15 +874,13 @@ function selectEmp(i){
 function ratePerf(qi,val,btn){
   perfRatings[qi]=val;
   btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
-  btn.classList.add('s'+val,'popping');
-  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
+  btn.classList.add('s'+val);
   updateScore('perf');
 }
 function rateCulture(qi,val,btn){
   cultureRatings[qi]=val;
   btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
-  btn.classList.add('s'+val,'popping');
-  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
+  btn.classList.add('s'+val);
   updateScore('culture');
 }
 function onNotesChange(){
@@ -910,11 +900,6 @@ function updateScore(pulseSide){
   else{document.getElementById('sc-perf').textContent='—';document.getElementById('prog-perf').style.width='0%';}
   if(ca!==null){document.getElementById('sc-cult').textContent=ca.toFixed(1)+' / 5';document.getElementById('prog-cult').style.width=Math.round((ca/5)*100)+'%';}
   else{document.getElementById('sc-cult').textContent='—';document.getElementById('prog-cult').style.width='0%';}
-  // Pulse the relevant score card
-  if(pulseSide){
-    const card=document.querySelector('.score-card.'+(pulseSide==='perf'?'perf':'culture'));
-    if(card){card.classList.add('pulsing');card.addEventListener('animationend',()=>card.classList.remove('pulsing'),{once:true});}
-  }
   const ow=document.getElementById('outcome-wrap');
   if(pa!==null&&ca!==null){
     const key=getOutcome(pa,ca),o=OUTCOMES[key];
@@ -1051,7 +1036,7 @@ function renderSaved(){
   let summary=`<div style="margin-bottom:12px">
     ${counts.rockstar?`<span class="${sp} o-rockstar">Rockstar: ${counts.rockstar}</span>`:''}
     ${counts.wip?`<span class="${sp} o-wip">WIP: ${counts.wip}</span>`:''}
-    ${counts.pip?`<span class="${sp} o-pip">PIP: ${counts.pip}</span>`:''}
+    ${counts.pip?`<span class="${sp} o-pip">Likeable Stars: ${counts.pip}</span>`:''}
     ${counts.exit?`<span class="${sp} o-exit">Exit: ${counts.exit}</span>`:''}
   </div>`;
 
