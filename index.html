@@ -1277,6 +1277,14 @@ function initApp(){
 }
 
 hydrate();
+// Migrate old PIP/Likeable Stars records to WIP
+saved.forEach(s=>{
+  if(s.outcome==='pip'||s.outcomeLabel==='PIP'||s.outcomeLabel==='Likeable Stars'){
+    s.outcome='wip';s.outcomeLabel='WIP';s.outcomeCls='o-wip';
+    s.desc='One side strong, one side needs work — 3-Month Plan';
+  }
+});
+persist();
 syncFromSheet(); // fetch records from Google Sheet for cross-browser visibility
 buildLoginScreen();
 
