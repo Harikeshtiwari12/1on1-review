@@ -354,6 +354,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 const STORAGE_KEY='1on1_review_v1';
 const SESSION_KEY='1on1_session_v1';
 const SHEET_URL='https://script.google.com/macros/s/AKfycbyiWdeYAB9OjP7hZ8AkjDFIVSONWFoqMmw82QuT8y55fgXSr0ANETbjnHySm4PN8f6C/exec';
+const SHEET_READ_URL='https://docs.google.com/spreadsheets/d/1EWdBpT0MhXIVibwsYKLb-5pbL01twTQxpFFNoZeseGI/pub?output=csv&gid=0';
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const CULTURE_QS=[
   "When you disagree with a decision made above you — do you push back, stay silent, or find another way? Give me a real example of how you handled it.",
@@ -671,6 +672,93 @@ let saved=[];
 // ── Persistence ────────────────────────────────────────────────────────────
 function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(saved));}catch(e){}}
 function hydrate(){try{const d=localStorage.getItem(STORAGE_KEY);if(d)saved=JSON.parse(d);}catch(e){saved=[];}}
+
+// ── Cloud sync: fetch records from Google Sheet ───────────────────────────
+function syncFromSheet(){
+  if(!SHEET_READ_URL)return;
+  fetch(SHEET_READ_URL).then(r=>{
+    if(!r.ok)throw new Error('Sheet not published');
+    return r.text();
+  }).then(csv=>{
+    const rows=parseCSV(csv);
+    if(rows.length<2)return;
+    const headers=rows[0].map(h=>h.trim().toLowerCase());
+    let added=0;
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i];
+      if(!row||row.length<10)continue;
+      const get=(name)=>{const idx=headers.indexOf(name);return idx>=0&&idx<row.length?row[idx].trim():'';};
+      const employee=get('employee')||get('name');
+      const period=get('period');
+      const dept=get('department')||get('dept');
+      if(!employee||!period||!dept)continue;
+      // Check if this record already exists in saved
+      const exists=saved.some(s=>s.name===employee&&s.period===period&&s.dept===dept);
+      if(exists)continue;
+      // Parse ratings
+      const pq1=parseFloat(get('perfq1'))||0,pq2=parseFloat(get('perfq2'))||0,pq3=parseFloat(get('perfq3'))||0;
+      const cq1=parseFloat(get('cultureq1'))||0,cq2=parseFloat(get('cultureq2'))||0;
+      const avgP=parseFloat(get('avgperf')||get('avgperformance'))||avgOf([pq1,pq2,pq3])||0;
+      const avgC=parseFloat(get('avgculture'))||avgOf([cq1,cq2])||0;
+      const outcomeLabel=get('outcome')||'';
+      const outcomeKey=outcomeLabel.toLowerCase()==='rockstar'?'rockstar':outcomeLabel.toLowerCase()==='wip'?'wip':outcomeLabel.toLowerCase()==='likeable stars'||outcomeLabel.toLowerCase()==='pip'?'pip':'exit';
+      const o=OUTCOMES[outcomeKey]||OUTCOMES.exit;
+      const record={
+        id: uid(),
+        name: employee,
+        role: get('role')||'',
+        dept: dept,
+        period: period,
+        perfScore: avgP.toFixed?avgP.toFixed(1):String(avgP),
+        cultScore: avgC.toFixed?avgC.toFixed(1):String(avgC),
+        perfRatings: [pq1,pq2,pq3],
+        cultureRatings: [cq1,cq2],
+        outcome: outcomeKey,
+        outcomeLabel: o.label,
+        outcomeCls: o.cls,
+        feedback: get('feedback')||'',
+        notes: get('notes')||'',
+        submittedBy: get('submittedby')||get('submitted by')||'',
+        date: get('datereviewed')||get('date reviewed')||get('date')||''
+      };
+      saved.push(record);
+      added++;
+    }
+    if(added>0){
+      persist();
+      if(document.getElementById('app').style.display==='block'){
+        renderEmpGrid();
+        renderSaved();
+      }
+      console.log('[syncFromSheet] Imported '+added+' records from cloud');
+    }
+  }).catch(err=>{
+    console.log('[syncFromSheet] Could not fetch from sheet:',err.message);
+  });
+}
+
+function parseCSV(text){
+  const rows=[];
+  let row=[];let cell='';let inQuote=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQuote){
+      if(c==='"'&&text[i+1]==='"'){cell+='"';i++;}
+      else if(c==='"'){inQuote=false;}
+      else{cell+=c;}
+    }else{
+      if(c==='"'){inQuote=true;}
+      else if(c===','){row.push(cell);cell='';}
+      else if(c==='\n'||(c==='\r'&&text[i+1]==='\n')){
+        row.push(cell);cell='';rows.push(row);row=[];
+        if(c==='\r')i++;
+      }else{cell+=c;}
+    }
+  }
+  if(cell||row.length)row.push(cell);
+  if(row.length)rows.push(row);
+  return rows;
+}
 function syncToSheet(record){
   if(!SHEET_URL) return;
   const payload={
@@ -1188,6 +1276,7 @@ function initApp(){
 }
 
 hydrate();
+syncFromSheet(); // fetch records from Google Sheet for cross-browser visibility
 buildLoginScreen();
 
 // Direct-link auto-login via URL hash (e.g. 1on1-review.html#atul)
