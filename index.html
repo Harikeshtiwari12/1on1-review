@@ -108,7 +108,15 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .notes-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
 @media(max-width:500px){.score-grid{grid-template-columns:1fr}.matrix-grid{grid-template-columns:1fr}.saved-item-top{flex-wrap:wrap}}
 
-/* ── Micro-interactions removed per request ── */
+/* ── Micro-interactions ── */
+@keyframes rb-pop{0%{transform:scale(1)}40%{transform:scale(1.22)}70%{transform:scale(0.94)}100%{transform:scale(1)}}
+.rb.popping{animation:rb-pop 0.22s ease}
+@keyframes score-glow-perf{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(55,138,221,0.18)}}
+@keyframes score-glow-cult{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(127,119,221,0.18)}}
+.score-card.perf.pulsing{animation:score-glow-perf 0.5s ease}
+.score-card.culture.pulsing{animation:score-glow-cult 0.5s ease}
+@keyframes outcome-in{from{opacity:0;transform:translateY(5px) scale(0.96)}to{opacity:1;transform:none}}
+.outcome-badge{animation:outcome-in 0.28s ease}
 
 /* ── Toast notifications ── */
 #toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
@@ -265,6 +273,12 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
       </div>
 
       <div class="notes-card">
+        <div class="notes-lbl">Team member feedback <span style="color:#E24B4A;font-weight:700">* Required</span></div>
+        <textarea id="member-feedback" placeholder="Required — what did the team member share? Their challenges, wins, concerns, career goals, or any feedback they want to give upward..." oninput="onFeedbackChange()" style="min-height:60px"></textarea>
+        <div class="notes-counter short" id="feedback-counter">0 characters · 20 minimum required</div>
+      </div>
+
+      <div class="notes-card">
         <div class="notes-lbl">Manager notes &amp; observations <span style="color:#E24B4A;font-weight:700">* Required</span></div>
         <textarea id="review-notes" placeholder="Required — add detailed observations, agreed action items, coaching points, or follow-ups from this 1-on-1..." oninput="onNotesChange()"></textarea>
         <div class="notes-counter short" id="notes-counter">0 characters · 20 minimum required</div>
@@ -328,6 +342,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
     <div class="filter-bar">
       <div id="saved-count" style="font-size:13px;font-weight:600;color:#888"></div>
       <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="export-btn" onclick="exportJSON()" title="Share this file with admins to sync records">⬆ Share Records</button>
+      <button class="export-btn" onclick="document.getElementById('import-file').click()" title="Import records shared by a leader">⬇ Import Records</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
     </div>
     <div id="saved-wrap"><div class="empty">No records saved yet. Go to Rate Employees to begin.</div></div>
   </div>
@@ -648,7 +665,7 @@ function renderProgress(){
 let currentUser=null;
 let perfRatings=[0,0,0],cultureRatings=[0,0],selEmp=null,selDept=0;
 let selMonth=new Date().getMonth(),selYear=new Date().getFullYear();
-let notes='',editingId=null;
+let notes='',feedback='',editingId=null;
 let saved=[];
 
 // ── Persistence ────────────────────────────────────────────────────────────
@@ -669,9 +686,10 @@ function syncToSheet(record){
     avgPerf:      record.perfScore,
     avgCulture:   record.cultScore,
     outcome:      record.outcomeLabel,
+    feedback:     record.feedback,
     notes:        record.notes,
     dateReviewed: record.date,
-    submittedBy:  currentUser.name
+    submittedBy:  record.submittedBy
   };
   console.log('[syncToSheet] payload:', JSON.stringify(payload));
   fetch(SHEET_URL, {
@@ -751,6 +769,7 @@ function switchTab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('on',i===j));
   document.getElementById('panel-rate').style.display=i===0?'block':'none';
   document.getElementById('panel-saved').style.display=i===1?'block':'none';
+  if(i===0){renderEmpGrid();}
   if(i===1){populatePeriodFilter();renderSaved();}
 }
 
@@ -834,13 +853,14 @@ function selectEmp(i){
     perfRatings=[...existing.perfRatings];
     cultureRatings=[...existing.cultureRatings];
     notes=existing.notes||'';
+    feedback=existing.feedback||'';
     document.getElementById('editing-badge').style.display='inline-flex';
     document.getElementById('save-btn').textContent='Update record';
     document.getElementById('save-btn').className='save-btn editing';
     document.getElementById('cancel-btn').style.display='block';
   } else {
     editingId=null;
-    perfRatings=[0,0,0];cultureRatings=[0,0];notes='';
+    perfRatings=[0,0,0];cultureRatings=[0,0];notes='';feedback='';
     document.getElementById('editing-badge').style.display='none';
     document.getElementById('save-btn').textContent='Save record';
     document.getElementById('save-btn').className='save-btn';
@@ -852,11 +872,13 @@ function selectEmp(i){
   document.getElementById('q-head').textContent='Questions for '+m.name+' · '+m.role;
   document.getElementById('q-section').style.display='block';
   document.getElementById('review-notes').value=notes;
+  document.getElementById('member-feedback').value=feedback;
   onNotesChange();
+  onFeedbackChange();
 
   const roleQs=roleQuestionsMap[m.role]||d.qs;
   document.getElementById('q-perf-wrap').innerHTML=roleQs.map((q,qi)=>`<div class="q-card perf">
-    <div class="q-num">Performance Q${qi+1} · ${d.leader} asking</div>
+    <div class="q-num">Performance Q${qi+1}</div>
     <div class="q-text">${q}</div>
     <div class="btns">${[1,2,3,4,5].map(r=>`<button class="rb${perfRatings[qi]===r?' s'+r:''}" onclick="ratePerf(${qi},${r},this)">${r} — ${rbl(r)}</button>`).join('')}</div>
   </div>`).join('');
@@ -874,13 +896,15 @@ function selectEmp(i){
 function ratePerf(qi,val,btn){
   perfRatings[qi]=val;
   btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
-  btn.classList.add('s'+val);
+  btn.classList.add('s'+val,'popping');
+  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
   updateScore('perf');
 }
 function rateCulture(qi,val,btn){
   cultureRatings[qi]=val;
   btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
-  btn.classList.add('s'+val);
+  btn.classList.add('s'+val,'popping');
+  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
   updateScore('culture');
 }
 function onNotesChange(){
@@ -888,6 +912,16 @@ function onNotesChange(){
   notes=ta.value;
   const len=notes.trim().length;
   const counter=document.getElementById('notes-counter');
+  if(len===0){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
+  else if(len<20){counter.textContent=len+' characters · '+(20-len)+' more needed';counter.className='notes-counter warn';}
+  else{counter.textContent=len+' characters ✓';counter.className='notes-counter ok';}
+  if(len>=20){ta.style.borderColor='';ta.style.boxShadow='';}
+}
+function onFeedbackChange(){
+  const ta=document.getElementById('member-feedback');
+  feedback=ta.value;
+  const len=feedback.trim().length;
+  const counter=document.getElementById('feedback-counter');
   if(len===0){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
   else if(len<20){counter.textContent=len+' characters · '+(20-len)+' more needed';counter.className='notes-counter warn';}
   else{counter.textContent=len+' characters ✓';counter.className='notes-counter ok';}
@@ -908,12 +942,26 @@ function updateScore(pulseSide){
   } else {
     ow.innerHTML=`<div class="note">Rate at least one performance and one culture question to see the outcome.</div>`;
   }
+  // Pulse the relevant score card
+  if(pulseSide){
+    const card=document.querySelector('.score-card.'+(pulseSide==='perf'?'perf':'culture'));
+    if(card){card.classList.add('pulsing');card.addEventListener('animationend',()=>card.classList.remove('pulsing'),{once:true});}
+  }
 }
 
 function saveRec(){
   if(selEmp===null){showToast('Please select an employee first.','warn');return;}
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
   if(pa===null||ca===null){showToast('Please rate at least one performance and one culture question.','warn');return;}
+  const fb=document.getElementById('member-feedback');
+  feedback=fb.value;
+  if(feedback.trim().length<20){
+    fb.focus();
+    fb.style.borderColor='#E24B4A';
+    fb.style.boxShadow='0 0 0 3px rgba(226,75,74,0.15)';
+    showToast('Team member feedback required — add at least 20 characters.','error');
+    return;
+  }
   const ta=document.getElementById('review-notes');
   notes=ta.value;
   if(notes.trim().length<20){
@@ -932,7 +980,9 @@ function saveRec(){
     perfScore: pa.toFixed(1), cultScore: ca.toFixed(1),
     perfRatings: [...perfRatings], cultureRatings: [...cultureRatings],
     outcome: key, outcomeLabel: o.label, outcomeCls: o.cls,
+    feedback: feedback,
     notes: notes,
+    submittedBy: currentUser.name,
     date: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
   };
   if(editingId){
@@ -955,7 +1005,7 @@ function cancelEdit(){
 }
 
 function resetForm(){
-  selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';editingId=null;
+  selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';feedback='';editingId=null;
   document.getElementById('q-section').style.display='none';
   document.getElementById('editing-badge').style.display='none';
   document.getElementById('save-btn').textContent='Save record';
@@ -963,8 +1013,12 @@ function resetForm(){
   document.getElementById('cancel-btn').style.display='none';
   const counter=document.getElementById('notes-counter');
   if(counter){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
+  const fbCounter=document.getElementById('feedback-counter');
+  if(fbCounter){fbCounter.textContent='0 characters · 20 minimum required';fbCounter.className='notes-counter short';}
   const ta=document.getElementById('review-notes');
-  if(ta){ta.style.borderColor='';ta.style.boxShadow='';}
+  if(ta){ta.style.borderColor='';ta.style.boxShadow='';ta.value='';}
+  const fb=document.getElementById('member-feedback');
+  if(fb){fb.style.borderColor='';fb.style.boxShadow='';fb.value='';}
   renderEmpGrid();
   checkDupWarn();
 }
@@ -1048,13 +1102,14 @@ function renderSaved(){
           <div class="si-sub">${s.role} · ${s.dept}</div>
           <div class="si-sub" style="margin-top:3px">
             <span class="period-label">${s.period}</span>
-            <span style="margin-left:6px;color:#bbb">Reviewed ${s.date}</span>
+            <span style="margin-left:6px;color:#bbb">Reviewed ${s.date}${s.submittedBy?' · by '+s.submittedBy:''}</span>
           </div>
         </div>
         <div class="si-scores">Perf ${s.perfScore}<br>Cult ${s.cultScore}</div>
         <div><span class="si-badge ${s.outcomeCls}">${s.outcomeLabel}</span>${getTraj(s)}</div>
       </div>
-      ${s.notes?`<div class="si-note">${escHtml(s.notes)}</div>`:''}
+      ${s.feedback?`<div class="si-note" style="border-left-color:#378ADD"><strong style="font-size:10px;color:#0C447C;text-transform:uppercase;letter-spacing:0.05em">Team Member Feedback:</strong><br>${escHtml(s.feedback)}</div>`:''}
+      ${s.notes?`<div class="si-note"><strong style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.05em">Manager Notes:</strong><br>${escHtml(s.notes)}</div>`:''}
       <div class="si-actions">
         <button class="act-btn" onclick="editRecord('${s.id}')">Edit</button>
         <button class="act-btn danger" onclick="deleteRecord('${s.id}')">Delete</button>
@@ -1069,7 +1124,7 @@ function escHtml(s){
 // ── CSV Export ──────────────────────────────────────────────────────────────
 function exportCSV(){
   if(!saved.length){showToast('No records to export.','warn');return;}
-  const headers=['Period','Employee','Role','Department','Perf Q1','Perf Q2','Perf Q3','Culture Q1','Culture Q2','Avg Performance','Avg Culture','Outcome','Notes','Date Reviewed'];
+  const headers=['Period','Employee','Role','Department','Perf Q1','Perf Q2','Perf Q3','Culture Q1','Culture Q2','Avg Performance','Avg Culture','Outcome','Team Member Feedback','Manager Notes','Submitted By','Date Reviewed'];
   const exportable=currentUser.isAdmin?saved:saved.filter(s=>s.dept===depts[currentUser.deptIndex].name);
   if(!exportable.length){showToast('No records to export.','warn');return;}
   const rows=exportable.map(s=>[
@@ -1077,7 +1132,7 @@ function exportCSV(){
     s.perfRatings[0]||'', s.perfRatings[1]||'', s.perfRatings[2]||'',
     s.cultureRatings[0]||'', s.cultureRatings[1]||'',
     s.perfScore, s.cultScore,
-    s.outcomeLabel, s.notes||'', s.date
+    s.outcomeLabel, s.feedback||'', s.notes||'', s.submittedBy||'', s.date
   ].map(csvEscape).join(','));
   const csv=[headers.join(','),...rows].join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
@@ -1086,6 +1141,41 @@ function exportCSV(){
   a.href=url;a.download=`1on1-reviews-${Date.now()}.csv`;
   document.body.appendChild(a);a.click();
   document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ── Import / Export for cross-browser sync ────────────────────────────────
+function exportJSON(){
+  if(!saved.length){showToast('No records to share.','warn');return;}
+  const exportable=currentUser.isAdmin?saved:saved.filter(s=>s.dept===depts[currentUser.deptIndex].name);
+  const blob=new Blob([JSON.stringify(exportable,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`1on1-reviews-${currentUser.name.replace(/\s+/g,'-')}-${Date.now()}.json`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('Records exported — share this file with admins.','success');
+}
+function importJSON(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const imported=JSON.parse(ev.target.result);
+      if(!Array.isArray(imported)){showToast('Invalid file format.','error');return;}
+      let added=0;
+      imported.forEach(rec=>{
+        if(!rec.id||!rec.name)return;
+        const exists=saved.some(s=>s.id===rec.id);
+        if(!exists){saved.push(rec);added++;}
+      });
+      persist();
+      populatePeriodFilter();renderSaved();renderEmpGrid();
+      showToast(`Imported ${added} new record${added!==1?'s':''} (${imported.length-added} already existed).`,'success');
+    }catch(err){showToast('Error reading file.','error');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
