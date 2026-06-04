@@ -702,7 +702,7 @@ function syncFromSheet(){
       const avgC=parseFloat(get('avgculture'))||avgOf([cq1,cq2])||0;
       const outcomeLabel=get('outcome')||'';
       const ol=outcomeLabel.toLowerCase();
-      const outcomeKey=ol==='rockstar'?'rockstar':ol==='wip'?'wip':(ol==='likeable stars'||ol==='pip')?'pip':ol==='exit'?'exit':'wip';
+      const outcomeKey=ol==='rockstar'?'rockstar':ol==='wip'?'wip':(ol.startsWith('likeable')||ol==='pip')?'pip':ol==='exit'?'exit':'wip';
       const o=OUTCOMES[outcomeKey]||OUTCOMES.exit;
       const record={
         id: uid(),
@@ -1281,10 +1281,10 @@ function initApp(){
 }
 
 hydrate();
-// Migrate old PIP labels to Likeable Star
+// Migrate old PIP/Likeable Stars labels to Likeable Star
 saved.forEach(s=>{
-  if(s.outcome==='pip'&&s.outcomeLabel==='PIP'){
-    s.outcomeLabel='Likeable Star';s.outcomeCls='o-pip';
+  if(s.outcome==='pip'||(s.outcomeLabel&&s.outcomeLabel.toLowerCase().startsWith('likeable'))||s.outcomeLabel==='PIP'){
+    s.outcome='pip';s.outcomeLabel='Likeable Star';s.outcomeCls='o-pip';
   }
 });
 persist();
