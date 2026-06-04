@@ -298,7 +298,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
           <div class="m-desc">Good Performance + Good Culture<br>Recognition &amp; Responsibilities</div>
         </div>
         <div class="matrix-item o-pip">
-          <div class="m-label">Likeable Stars</div>
+          <div class="m-label">Likeable Star</div>
           <div class="m-desc">Good Culture + Weak Performance<br>3-Months Coaching Plan</div>
         </div>
         <div class="matrix-item o-wip">
@@ -331,7 +331,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         <div class="lbl">Filter by outcome</div>
         <select id="filter-outcome" onchange="renderSaved()">
           <option value="">All outcomes</option>
-          <option>Rockstar</option><option>Likeable Stars</option><option>WIP</option><option>Exit</option>
+          <option>Rockstar</option><option>Likeable Star</option><option>WIP</option><option>Exit</option>
         </select>
       </div>
       <div class="col">
@@ -591,7 +591,7 @@ const roleQuestionsMap={
 const OUTCOMES={
   rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
   wip:{label:'WIP',desc:'Good Performance, Weak Culture — 1-Month Close Watch',cls:'o-wip'},
-  pip:{label:'Likeable Stars',desc:'Good Culture, Weak Performance — 3-Months Coaching Plan',cls:'o-pip'},
+  pip:{label:'Likeable Star',desc:'Good Culture, Weak Performance — 3-Months Coaching Plan',cls:'o-pip'},
   exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
 };
 
@@ -1182,7 +1182,7 @@ function renderSaved(){
   const sp='summary-pill';
   let summary=`<div style="margin-bottom:12px">
     ${counts.rockstar?`<span class="${sp} o-rockstar">Rockstar: ${counts.rockstar}</span>`:''}
-    ${counts.pip?`<span class="${sp} o-pip">Likeable Stars: ${counts.pip}</span>`:''}
+    ${counts.pip?`<span class="${sp} o-pip">Likeable Star: ${counts.pip}</span>`:''}
     ${counts.wip?`<span class="${sp} o-wip">WIP: ${counts.wip}</span>`:''}
     ${counts.exit?`<span class="${sp} o-exit">Exit: ${counts.exit}</span>`:''}
   </div>`;
@@ -1281,10 +1281,10 @@ function initApp(){
 }
 
 hydrate();
-// Migrate old PIP labels to Likeable Stars
+// Migrate old PIP labels to Likeable Star
 saved.forEach(s=>{
   if(s.outcome==='pip'&&s.outcomeLabel==='PIP'){
-    s.outcomeLabel='Likeable Stars';s.outcomeCls='o-pip';
+    s.outcomeLabel='Likeable Star';s.outcomeCls='o-pip';
   }
 });
 persist();
