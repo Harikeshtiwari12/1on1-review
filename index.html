@@ -297,13 +297,13 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
           <div class="m-label">Rockstar</div>
           <div class="m-desc">Good Performance + Good Culture<br>Recognition &amp; Responsibilities</div>
         </div>
-        <div class="matrix-item o-wip">
-          <div class="m-label">WIP</div>
-          <div class="m-desc">Good Performance + Weak Culture<br>3-Month Plan</div>
-        </div>
         <div class="matrix-item o-pip">
           <div class="m-label">Likeable Stars</div>
-          <div class="m-desc">Good Culture + Weak Performance<br>Coaching Plan</div>
+          <div class="m-desc">Good Culture + Weak Performance<br>3-Month Plan</div>
+        </div>
+        <div class="matrix-item o-wip">
+          <div class="m-label">WIP</div>
+          <div class="m-desc">Good Performance + Weak Culture<br>1-Month Coaching Plan</div>
         </div>
         <div class="matrix-item o-exit">
           <div class="m-label">Exit</div>
@@ -331,7 +331,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         <div class="lbl">Filter by outcome</div>
         <select id="filter-outcome" onchange="renderSaved()">
           <option value="">All outcomes</option>
-          <option>Rockstar</option><option>WIP</option><option>Likeable Stars</option><option>Exit</option>
+          <option>Rockstar</option><option>Likeable Stars</option><option>WIP</option><option>Exit</option>
         </select>
       </div>
       <div class="col">
@@ -590,8 +590,8 @@ const roleQuestionsMap={
 
 const OUTCOMES={
   rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
-  wip:{label:'WIP',desc:'Good Performance, Weak Culture — 3-Month Plan',cls:'o-wip'},
-  pip:{label:'Likeable Stars',desc:'Good Culture, Weak Performance — Coaching Plan',cls:'o-pip'},
+  wip:{label:'WIP',desc:'Good Performance, Weak Culture — 1-Month Coaching Plan',cls:'o-wip'},
+  pip:{label:'Likeable Stars',desc:'Good Culture, Weak Performance — 3-Month Plan',cls:'o-pip'},
   exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
 };
 
@@ -1182,8 +1182,8 @@ function renderSaved(){
   const sp='summary-pill';
   let summary=`<div style="margin-bottom:12px">
     ${counts.rockstar?`<span class="${sp} o-rockstar">Rockstar: ${counts.rockstar}</span>`:''}
-    ${counts.wip?`<span class="${sp} o-wip">WIP: ${counts.wip}</span>`:''}
     ${counts.pip?`<span class="${sp} o-pip">Likeable Stars: ${counts.pip}</span>`:''}
+    ${counts.wip?`<span class="${sp} o-wip">WIP: ${counts.wip}</span>`:''}
     ${counts.exit?`<span class="${sp} o-exit">Exit: ${counts.exit}</span>`:''}
   </div>`;
 
