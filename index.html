@@ -692,9 +692,16 @@ function syncFromSheet(){
       const period=get('period');
       const dept=get('department')||get('dept');
       if(!employee||!period||!dept)continue;
-      // Check if this record already exists in saved
-      const exists=saved.some(s=>s.name===employee&&s.period===period&&s.dept===dept);
-      if(exists)continue;
+      // Check if this record already exists in saved — update outcome if so
+      const existing=saved.find(s=>s.name===employee&&s.period===period&&s.dept===dept);
+      if(existing){
+        const pa=parseFloat(existing.perfScore),ca=parseFloat(existing.cultScore);
+        if(!isNaN(pa)&&!isNaN(ca)){
+          const key=getOutcome(pa,ca);const o=OUTCOMES[key];
+          if(o){existing.outcome=key;existing.outcomeLabel=o.label;existing.outcomeCls=o.cls;}
+        }
+        continue;
+      }
       // Parse ratings
       const pq1=parseFloat(get('perfq1'))||0,pq2=parseFloat(get('perfq2'))||0,pq3=parseFloat(get('perfq3'))||0;
       const cq1=parseFloat(get('cultureq1'))||0,cq2=parseFloat(get('cultureq2'))||0;
@@ -1281,10 +1288,13 @@ function initApp(){
 }
 
 hydrate();
-// Migrate old PIP/Likeable Stars labels to Likeable Star
+// Recalculate outcomes from actual scores to fix any stale labels
 saved.forEach(s=>{
-  if(s.outcome==='pip'||(s.outcomeLabel&&s.outcomeLabel.toLowerCase().startsWith('likeable'))||s.outcomeLabel==='PIP'){
-    s.outcome='pip';s.outcomeLabel='Likeable Star';s.outcomeCls='o-pip';
+  const pa=parseFloat(s.perfScore),ca=parseFloat(s.cultScore);
+  if(!isNaN(pa)&&!isNaN(ca)){
+    const key=getOutcome(pa,ca);
+    const o=OUTCOMES[key];
+    if(o){s.outcome=key;s.outcomeLabel=o.label;s.outcomeCls=o.cls;}
   }
 });
 persist();
