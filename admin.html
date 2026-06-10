@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1-on-1 Review — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0f0c;--surface:#1c1a1a;--surface2:#242424;--accent:#da5d37;--accent2:#df7afe;--green:rgb(39,133,137);--text:#eaece5;--muted:#858a8e;--border:rgba(255,255,255,0.08);--red:#E24B4A;--yellow:#EF9F27;--blue:#378ADD}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.glow-top{position:fixed;top:-300px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(218,93,55,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+.glow-purple{position:fixed;bottom:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(ellipse,rgba(223,122,254,0.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;background:rgba(28,26,26,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.04em}
+.nav-brand span{color:var(--accent)}
+.nav-pill{font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;background:rgba(218,93,55,0.12);border:1px solid rgba(218,93,55,0.3);color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px}
+.nav-pill .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+
+/* Login */
+.login-screen{position:relative;z-index:1;max-width:400px;margin:0 auto;padding:140px 1.5rem 80px;text-align:center}
+.login-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);background:rgba(218,93,55,0.1);border:1px solid rgba(218,93,55,0.25);padding:6px 16px;border-radius:20px;margin-bottom:1.5rem}
+.login-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+.login-screen h2{font-size:clamp(1.4rem,3vw,1.8rem);font-weight:900;margin-bottom:8px;color:#fff}
+.login-screen h2 .hl{color:var(--accent)}
+.login-sub{font-size:0.75rem;color:var(--muted);margin-bottom:24px;font-weight:500}
+.login-input{width:100%;padding:14px 16px;font-family:inherit;font-size:0.85rem;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;outline:none;text-align:center;letter-spacing:0.1em;margin-bottom:12px}
+.login-input:focus{border-color:rgba(218,93,55,0.4)}
+.login-btn{width:100%;padding:14px;font-family:inherit;font-size:0.85rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;background:var(--accent);color:#fff;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.03em}
+.login-btn:hover{background:#c44e2b;transform:translateY(-1px);box-shadow:0 8px 32px rgba(218,93,55,0.35)}
+.login-btn .arrow{font-size:18px;transition:transform 0.2s}
+.login-btn:hover .arrow{transform:translateX(4px)}
+.login-error{font-size:0.7rem;color:var(--red);margin-top:10px;display:none}
+
+/* Dashboard */
+.dashboard{display:none;position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:76px 2rem 80px}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px}
+.dash-title{font-size:clamp(1.2rem,3vw,1.6rem);font-weight:900;color:#fff}
+.dash-title .hl{color:var(--accent)}.dash-title .hl2{color:var(--accent2)}
+.dash-sub{font-size:0.78rem;color:var(--muted);margin-bottom:24px;font-weight:500}
+.filter-label{font-size:0.5rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:6px}
+.dash-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.filter-btn{padding:6px 14px;font-family:inherit;font-size:0.62rem;font-weight:700;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all 0.15s}
+.filter-btn:hover{border-color:rgba(218,93,55,0.3);color:var(--text)}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* Score cards */
+.score-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;transition:all 0.2s;position:relative;overflow:hidden}
+.score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s}
+.score-card:hover{border-color:rgba(218,93,55,0.3);transform:translateY(-2px)}
+.score-card:hover::before{opacity:1}
+.sc-label{font-size:0.5rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px}
+.sc-value{font-size:2rem;font-weight:900;letter-spacing:-0.02em;color:var(--text)}
+.sc-sub{font-size:0.55rem;color:var(--muted);margin-top:4px;font-weight:600}
+
+/* Outcome pills */
+.outcome-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:8px}
+.ob-rockstar{background:#1D9E75}.ob-likeable{background:#378ADD}.ob-wip{background:#EF9F27}.ob-exit{background:#E24B4A}
+.outcome-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;justify-content:center}
+.ol-item{display:flex;align-items:center;gap:4px;font-size:0.5rem;font-weight:700;color:var(--muted)}
+.ol-dot{width:8px;height:8px;border-radius:3px}
+
+/* Sections */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:16px;overflow:hidden;transition:all 0.2s;position:relative}
+.section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity 0.2s}
+.section:hover{border-color:rgba(218,93,55,0.3)}
+.section:hover::before{opacity:1}
+.section-header{padding:14px 20px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.section-icon{font-size:1rem}
+.section-header span.sh-text{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent)}
+.section-body{padding:14px 20px}
+
+/* Tables */
+.t{width:100%;border-collapse:collapse}
+.t th{font-size:0.5rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);text-align:left;padding:7px 8px;border-bottom:1px solid var(--border)}
+.t td{font-size:0.72rem;font-weight:600;padding:8px;border-bottom:1px solid var(--border);color:var(--text)}
+.t tr:last-child td{border-bottom:none}
+.t .num{font-weight:800;font-size:0.78rem}
+
+/* Outcome badges */
+.badge-sm{font-size:0.5rem;font-weight:800;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:0.06em}
+.b-rockstar{background:rgba(29,158,117,0.12);color:#34d399;border:1px solid rgba(29,158,117,0.2)}
+.b-likeable{background:rgba(55,138,221,0.12);color:#60a5fa;border:1px solid rgba(55,138,221,0.2)}
+.b-wip{background:rgba(239,159,39,0.12);color:#fbbf24;border:1px solid rgba(239,159,39,0.2)}
+.b-exit{background:rgba(226,75,74,0.12);color:#f87171;border:1px solid rgba(226,75,74,0.2)}
+
+/* Pulse bars */
+.pulse-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.pulse-row:last-child{border-bottom:none}
+.pulse-label{flex:0 0 200px;font-size:0.68rem;font-weight:600;color:var(--muted)}
+.pulse-bar-wrap{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.pulse-bar-fill{height:100%;border-radius:4px;transition:width 0.5s ease}
+.pulse-avg{flex:0 0 45px;text-align:right;font-size:0.75rem;font-weight:800}
+
+/* Insights */
+.insight{padding:10px 14px;border-radius:10px;margin-bottom:8px;font-size:0.72rem;font-weight:600;line-height:1.6;display:flex;align-items:flex-start;gap:10px}
+.insight-icon{font-size:1rem;flex-shrink:0}
+.insight-good{background:rgba(29,158,117,0.08);color:#34d399;border:1px solid rgba(29,158,117,0.15)}
+.insight-warn{background:rgba(239,159,39,0.08);color:#fbbf24;border:1px solid rgba(239,159,39,0.15)}
+.insight-bad{background:rgba(226,75,74,0.08);color:#f87171;border:1px solid rgba(226,75,74,0.15)}
+.insight-info{background:rgba(55,138,221,0.08);color:#60a5fa;border:1px solid rgba(55,138,221,0.15)}
+
+/* Heatmap */
+.hm-table{width:100%;border-collapse:collapse;font-size:0.6rem}
+.hm-table th{font-size:0.48rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);padding:6px;border-bottom:1px solid var(--border);text-align:center;white-space:nowrap}
+.hm-table th:first-child{text-align:left}
+.hm-table td{padding:5px 6px;text-align:center;font-weight:700;border-bottom:1px solid var(--border)}
+.hm-table td:first-child{text-align:left;color:var(--text);font-weight:600;font-size:0.65rem}
+.hm-table tr:last-child td{border-bottom:none}
+.hm-cell{border-radius:4px;padding:3px 5px;display:inline-block;min-width:30px}
+
+/* Comments */
+.comment{padding:10px 14px;background:var(--surface2);border-radius:10px;margin-bottom:8px;font-size:0.72rem;color:var(--muted);line-height:1.7;border-left:3px solid var(--accent)}
+.comment-meta{font-size:0.5rem;font-weight:700;color:rgba(255,255,255,0.15);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em}
+.comment-type{font-size:0.48rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-right:6px}
+.ct-feedback{background:rgba(218,93,55,0.12);color:var(--accent)}
+.ct-notes{background:rgba(223,122,254,0.12);color:var(--accent2)}
+
+/* Two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.rank-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.7rem}
+.rank-row:last-child{border-bottom:none}
+.rank-num{width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:800;flex-shrink:0}
+.rank-green{background:rgba(29,158,117,0.12);color:#34d399}
+.rank-red{background:rgba(226,75,74,0.12);color:#f87171}
+.rank-label{flex:1;font-weight:600;color:var(--muted)}
+.rank-val{font-weight:800;font-size:0.75rem}
+.rank-badge{margin-left:6px}
+
+.empty-state{text-align:center;padding:30px 20px;font-size:0.78rem;color:var(--muted)}
+.responses-count{font-size:0.58rem;font-weight:600;color:var(--muted);margin-bottom:14px}
+
+@media(max-width:768px){
+  .dashboard{padding:70px 1rem 60px}
+  .score-row{grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr}
+  .pulse-label{flex:0 0 140px;font-size:0.6rem}
+  .hm-table{font-size:0.5rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-inner"><div class="nav-brand">Tran<span>Z</span>act</div><div class="nav-pill"><span class="dot"></span> People OS</div></div></nav>
+<div class="glow-top"></div>
+<div class="glow-purple"></div>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-eyebrow"><span class="dot"></span> Restricted Access</div>
+  <h2>1-on-1 <span class="hl">Analytics</span></h2>
+  <div class="login-sub">Performance & culture intelligence for leadership</div>
+  <input type="password" class="login-input" id="passInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+  <button class="login-btn" onclick="doLogin()">Unlock Dashboard <span class="arrow">&rarr;</span></button>
+  <div class="login-error" id="loginError">Incorrect password.</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="dash-header">
+    <div class="dash-title">1-on-1 <span class="hl">Review</span> <span class="hl2">Analytics</span></div>
+  </div>
+  <div class="dash-sub">Performance, culture & outcome intelligence across all teams</div>
+
+  <!-- Filters -->
+  <div class="filter-label">Filter by Period</div>
+  <div class="dash-filter" id="filterPeriod" data-key="period"></div>
+  <div class="filter-label">Filter by Department</div>
+  <div class="dash-filter" id="filterDept" data-key="department">
+    <button class="filter-btn active" data-val="All">All Teams</button>
+  </div>
+
+  <div id="responseCount" class="responses-count"></div>
+
+  <!-- Overview Cards -->
+  <div class="score-row" id="overviewCards">
+    <div class="score-card"><div class="sc-label">Total Reviews</div><div class="sc-value" id="totalReviews">—</div><div class="sc-sub" id="completionRate"></div></div>
+    <div class="score-card"><div class="sc-label">Avg Performance</div><div class="sc-value" id="avgPerf">—</div><div class="sc-sub">Out of 5</div></div>
+    <div class="score-card"><div class="sc-label">Avg Culture</div><div class="sc-value" id="avgCulture">—</div><div class="sc-sub">Out of 5</div></div>
+    <div class="score-card"><div class="sc-label">Rockstar %</div><div class="sc-value" id="rockstarPct" style="color:#34d399">—</div><div class="sc-sub" id="rockstarCount"></div></div>
+    <div class="score-card"><div class="sc-label">WIP + Exit %</div><div class="sc-value" id="riskPct" style="color:#f87171">—</div><div class="sc-sub" id="riskCount"></div></div>
+  </div>
+
+  <!-- Outcome Distribution -->
+  <div class="score-card" style="margin-bottom:20px">
+    <div class="sc-label">Outcome Distribution</div>
+    <div class="outcome-bar" id="outcomeBar"></div>
+    <div class="outcome-legend" id="outcomeLegend"></div>
+  </div>
+
+  <!-- Key Insights -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#128161;</span><span class="sh-text">Key Insights & Alerts</span></div><div class="section-body" id="insightsSection"></div></div>
+
+  <!-- Team Scorecard -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#128202;</span><span class="sh-text">Team Scorecard</span></div><div class="section-body" id="teamSection"></div></div>
+
+  <!-- Leader Effectiveness -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#128101;</span><span class="sh-text">Leader Effectiveness — Review Completion & Quality</span></div><div class="section-body" id="leaderSection"></div></div>
+
+  <!-- Heatmap: Team x Outcome -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#128293;</span><span class="sh-text">Heatmap — Team x Performance Metrics</span></div><div class="section-body" style="overflow-x:auto" id="heatmapSection"></div></div>
+
+  <!-- Top Performers & Risk Radar -->
+  <div class="two-col">
+    <div class="section" style="margin-bottom:0"><div class="section-header"><span class="section-icon">&#127942;</span><span class="sh-text">Top Performers</span></div><div class="section-body" id="topSection"></div></div>
+    <div class="section" style="margin-bottom:0"><div class="section-header"><span class="section-icon">&#128680;</span><span class="sh-text">Risk Radar — Needs Attention</span></div><div class="section-body" id="riskSection"></div></div>
+  </div>
+
+  <!-- Month-over-Month Trend -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#128200;</span><span class="sh-text">Month-over-Month Trend</span></div><div class="section-body" id="trendSection"></div></div>
+
+  <!-- Performance vs Culture Breakdown -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#127919;</span><span class="sh-text">Performance vs Culture — Question-Level Breakdown</span></div><div class="section-body" id="questionSection"></div></div>
+
+  <!-- Feedback & Notes -->
+  <div class="section"><div class="section-header"><span class="section-icon">&#128172;</span><span class="sh-text">Manager Feedback & Notes</span></div><div class="section-body" id="feedbackSection"></div></div>
+</div>
+
+<script>
+const ADMIN_PASS='TranZact@1on1';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbyiWdeYAB9OjP7hZ8AkjDFIVSONWFoqMmw82QuT8y55fgXSr0ANETbjnHySm4PN8f6C/exec';
+
+function doLogin(){
+  if(document.getElementById('passInput').value===ADMIN_PASS){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    loadData();
+  } else { document.getElementById('loginError').style.display='block'; }
+}
+
+let allData=[];
+const filters={period:'All',department:'All'};
+
+// Filter clicks
+document.querySelectorAll('.dash-filter').forEach(bar=>{
+  bar.addEventListener('click',function(e){
+    if(!e.target.classList.contains('filter-btn'))return;
+    this.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+    filters[this.dataset.key]=e.target.dataset.val;
+    render();
+  });
+});
+
+// Field normalization
+function norm(row){
+  const o={};
+  for(const k in row){
+    const key=k.toString().toLowerCase().replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+    o[key]=row[k];
+  }
+  // Standardize field names
+  o.period=o.period||'';
+  o.employee=o.employee||'';
+  o.role=o.role||'';
+  o.department=o.department||'';
+  o.perfQ1=parseFloat(o.perfq1)||0;
+  o.perfQ2=parseFloat(o.perfq2)||0;
+  o.perfQ3=parseFloat(o.perfq3)||0;
+  o.cultureQ1=parseFloat(o.cultureq1)||0;
+  o.cultureQ2=parseFloat(o.cultureq2)||0;
+  o.avgPerf=parseFloat(o.avgperf)||0;
+  o.avgCulture=parseFloat(o.avgculture)||0;
+  o.outcome=(o.outcome||'').toString();
+  o.feedback=(o.feedback||'').toString();
+  o.notes=(o.notes||'').toString();
+  o.submittedBy=o.submittedby||o.submitted_by||'';
+  o.dateReviewed=o.datereviewed||o.date_reviewed||'';
+  // Normalize outcome
+  const ol=o.outcome.toLowerCase();
+  if(ol.includes('rock'))o.outcomeKey='rockstar';
+  else if(ol.includes('likeable')||ol.includes('pip'))o.outcomeKey='likeable';
+  else if(ol.includes('wip'))o.outcomeKey='wip';
+  else if(ol.includes('exit'))o.outcomeKey='exit';
+  else o.outcomeKey='unknown';
+  return o;
+}
+
+function loadData(){
+  document.getElementById('responseCount').textContent='Loading reviews...';
+  fetch(SHEET_URL,{redirect:'follow'})
+    .then(r=>r.json())
+    .then(data=>{
+      allData=data.map(norm).filter(d=>d.employee&&d.avgPerf>0);
+      if(!allData.length){
+        document.getElementById('responseCount').innerHTML='0 reviews found. <span style="color:var(--accent)">Ensure the Google Sheet has data and the Apps Script doGet is deployed.</span>';
+        return;
+      }
+      buildFilters();
+      render();
+    })
+    .catch(err=>{
+      document.getElementById('responseCount').innerHTML='Could not load data. <span style="color:var(--accent)">Check Apps Script deployment.</span>';
+    });
+}
+
+function buildFilters(){
+  // Period filter
+  const periods=[...new Set(allData.map(d=>d.period))].filter(Boolean).sort();
+  const pBar=document.getElementById('filterPeriod');
+  pBar.innerHTML='<button class="filter-btn active" data-val="All">All Months</button>'+
+    periods.map(p=>'<button class="filter-btn" data-val="'+p+'">'+p+'</button>').join('');
+  // Dept filter
+  const depts=[...new Set(allData.map(d=>d.department))].filter(Boolean).sort();
+  const dBar=document.getElementById('filterDept');
+  dBar.innerHTML='<button class="filter-btn active" data-val="All">All Teams</button>'+
+    depts.map(d=>'<button class="filter-btn" data-val="'+d+'">'+d+'</button>').join('');
+}
+
+// Helpers
+function avg(arr){return arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length):0;}
+function f(v){return v?v.toFixed(2):'—';}
+function nC(v,max){if(!v)return'var(--muted)';const r=v/max;return r>=0.75?'#34d399':r>=0.6?'#60a5fa':r>=0.45?'#fbbf24':'#f87171';}
+function hmBg(v,max){if(!v)return'transparent';const r=v/max;return r>=0.75?'rgba(29,158,117,0.2)':r>=0.6?'rgba(55,138,221,0.15)':r>=0.45?'rgba(239,159,39,0.15)':'rgba(226,75,74,0.2)';}
+function badgeCls(key){return key==='rockstar'?'b-rockstar':key==='likeable'?'b-likeable':key==='wip'?'b-wip':'b-exit';}
+function badgeLabel(key){return key==='rockstar'?'Rockstar':key==='likeable'?'Likeable Star':key==='wip'?'WIP':'Exit';}
+
+function render(){
+  let data=allData;
+  if(filters.period!=='All')data=data.filter(d=>d.period===filters.period);
+  if(filters.department!=='All')data=data.filter(d=>d.department===filters.department);
+  const total=data.length;
+  document.getElementById('responseCount').textContent=total+' review'+(total!==1?'s':'')+' found';
+
+  if(!total){
+    ['totalReviews','avgPerf','avgCulture','rockstarPct','riskPct'].forEach(id=>{document.getElementById(id).textContent='—';});
+    ['insightsSection','teamSection','leaderSection','heatmapSection','topSection','riskSection','trendSection','questionSection','feedbackSection'].forEach(id=>{document.getElementById(id).innerHTML='<div class="empty-state">No data for selected filters</div>';});
+    document.getElementById('outcomeBar').innerHTML='';
+    document.getElementById('outcomeLegend').innerHTML='';
+    return;
+  }
+
+  // === OVERVIEW ===
+  document.getElementById('totalReviews').textContent=total;
+  const ap=avg(data.map(d=>d.avgPerf));
+  const ac=avg(data.map(d=>d.avgCulture));
+  document.getElementById('avgPerf').textContent=f(ap);
+  document.getElementById('avgPerf').style.color=nC(ap,5);
+  document.getElementById('avgCulture').textContent=f(ac);
+  document.getElementById('avgCulture').style.color=nC(ac,5);
+
+  const counts={rockstar:0,likeable:0,wip:0,exit:0};
+  data.forEach(d=>{if(counts[d.outcomeKey]!==undefined)counts[d.outcomeKey]++;});
+  const rPct=Math.round(counts.rockstar/total*100);
+  const riskPctVal=Math.round((counts.wip+counts.exit)/total*100);
+  document.getElementById('rockstarPct').textContent=rPct+'%';
+  document.getElementById('rockstarCount').textContent=counts.rockstar+' of '+total;
+  document.getElementById('riskPct').textContent=riskPctVal+'%';
+  document.getElementById('riskCount').textContent=(counts.wip+counts.exit)+' of '+total;
+
+  // Outcome bar
+  document.getElementById('outcomeBar').innerHTML=
+    '<div class="ob-rockstar" style="width:'+Math.round(counts.rockstar/total*100)+'%"></div>'+
+    '<div class="ob-likeable" style="width:'+Math.round(counts.likeable/total*100)+'%"></div>'+
+    '<div class="ob-wip" style="width:'+Math.round(counts.wip/total*100)+'%"></div>'+
+    '<div class="ob-exit" style="width:'+Math.round(counts.exit/total*100)+'%"></div>';
+  document.getElementById('outcomeLegend').innerHTML=
+    '<span class="ol-item"><span class="ol-dot" style="background:#1D9E75"></span>Rockstar '+counts.rockstar+'</span>'+
+    '<span class="ol-item"><span class="ol-dot" style="background:#378ADD"></span>Likeable Star '+counts.likeable+'</span>'+
+    '<span class="ol-item"><span class="ol-dot" style="background:#EF9F27"></span>WIP '+counts.wip+'</span>'+
+    '<span class="ol-item"><span class="ol-dot" style="background:#E24B4A"></span>Exit '+counts.exit+'</span>';
+
+  // === INSIGHTS ===
+  let ins=[];
+  if(rPct>=60)ins.push({t:'good',i:'&#127942;',m:'<strong>'+rPct+'%</strong> are Rockstars — strong team performance.'});
+  else if(rPct>=40)ins.push({t:'info',i:'&#9989;',m:'<strong>'+rPct+'%</strong> Rockstars — healthy but room to grow.'});
+  else ins.push({t:'warn',i:'&#9888;',m:'Only <strong>'+rPct+'%</strong> Rockstars — coaching programs need acceleration.'});
+
+  if(riskPctVal>=30)ins.push({t:'bad',i:'&#128680;',m:'<strong>'+riskPctVal+'%</strong> are WIP or Exit — nearly 1 in 3. Retention risk is high.'});
+  if(counts.exit>0)ins.push({t:'bad',i:'&#128683;',m:'<strong>'+counts.exit+'</strong> employee'+(counts.exit>1?'s':'')+' flagged for Exit — immediate action required.'});
+
+  if(ap<3)ins.push({t:'bad',i:'&#128200;',m:'Avg performance is <strong>'+f(ap)+'/5</strong> — below expectations across the board.'});
+  else if(ap<3.5)ins.push({t:'warn',i:'&#128203;',m:'Avg performance is <strong>'+f(ap)+'/5</strong> — needs improvement in some teams.'});
+
+  if(ac<3)ins.push({t:'bad',i:'&#128148;',m:'Culture score is <strong>'+f(ac)+'/5</strong> — cultural alignment is a concern.'});
+  if(ac>ap+0.5)ins.push({t:'info',i:'&#128172;',m:'Culture (<strong>'+f(ac)+'</strong>) is higher than Performance (<strong>'+f(ap)+'</strong>) — people fit the culture but need upskilling.'});
+  if(ap>ac+0.5)ins.push({t:'warn',i:'&#9889;',m:'Performance (<strong>'+f(ap)+'</strong>) is higher than Culture (<strong>'+f(ac)+'</strong>) — high performers but cultural misalignment risk.'});
+
+  // Repeat WIP/Exit
+  const empOutcomes={};
+  allData.forEach(d=>{if(!empOutcomes[d.employee])empOutcomes[d.employee]=[];empOutcomes[d.employee].push(d.outcomeKey);});
+  const repeatRisk=Object.entries(empOutcomes).filter(([_,arr])=>arr.filter(o=>o==='wip'||o==='exit').length>=2);
+  if(repeatRisk.length)ins.push({t:'bad',i:'&#128260;',m:'<strong>'+repeatRisk.length+'</strong> employee'+(repeatRisk.length>1?'s':'')+' flagged WIP/Exit in 2+ months — chronic underperformance.'});
+
+  document.getElementById('insightsSection').innerHTML=ins.length?
+    ins.map(i=>'<div class="insight insight-'+i.t+'"><span class="insight-icon">'+i.i+'</span><span>'+i.m+'</span></div>').join(''):
+    '<div class="empty-state">More data needed for insights</div>';
+
+  // === TEAM SCORECARD ===
+  const depts=[...new Set(data.map(d=>d.department))].filter(Boolean);
+  let tHTML='<table class="t"><thead><tr><th>Team</th><th>Reviews</th><th>Avg Perf</th><th>Avg Culture</th><th>Rockstar</th><th>Likeable</th><th>WIP</th><th>Exit</th></tr></thead><tbody>';
+  depts.forEach(dept=>{
+    const dd=data.filter(d=>d.department===dept);
+    const c={rockstar:0,likeable:0,wip:0,exit:0};
+    dd.forEach(d=>{if(c[d.outcomeKey]!==undefined)c[d.outcomeKey]++;});
+    tHTML+='<tr><td>'+dept+'</td><td>'+dd.length+'</td><td class="num" style="color:'+nC(avg(dd.map(d=>d.avgPerf)),5)+'">'+f(avg(dd.map(d=>d.avgPerf)))+'</td><td class="num" style="color:'+nC(avg(dd.map(d=>d.avgCulture)),5)+'">'+f(avg(dd.map(d=>d.avgCulture)))+'</td><td style="color:#34d399">'+c.rockstar+'</td><td style="color:#60a5fa">'+c.likeable+'</td><td style="color:#fbbf24">'+c.wip+'</td><td style="color:#f87171">'+c.exit+'</td></tr>';
+  });
+  tHTML+='</tbody></table>';
+  document.getElementById('teamSection').innerHTML=tHTML;
+
+  // === LEADER EFFECTIVENESS ===
+  const leaders=[...new Set(data.map(d=>d.submittedBy))].filter(Boolean);
+  let lHTML='<table class="t"><thead><tr><th>Leader</th><th>Reviews Done</th><th>Avg Perf Given</th><th>Avg Culture Given</th><th>Rockstar %</th><th>WIP/Exit %</th></tr></thead><tbody>';
+  leaders.forEach(leader=>{
+    const dd=data.filter(d=>d.submittedBy===leader);
+    const c={rockstar:0,wip:0,exit:0};
+    dd.forEach(d=>{if(c[d.outcomeKey]!==undefined)c[d.outcomeKey]++;});
+    const rk=Math.round(c.rockstar/dd.length*100);
+    const ri=Math.round((c.wip+c.exit)/dd.length*100);
+    lHTML+='<tr><td>'+leader+'</td><td>'+dd.length+'</td><td class="num" style="color:'+nC(avg(dd.map(d=>d.avgPerf)),5)+'">'+f(avg(dd.map(d=>d.avgPerf)))+'</td><td class="num" style="color:'+nC(avg(dd.map(d=>d.avgCulture)),5)+'">'+f(avg(dd.map(d=>d.avgCulture)))+'</td><td style="color:#34d399">'+rk+'%</td><td style="color:'+(ri>=30?'#f87171':'#fbbf24')+'">'+ri+'%</td></tr>';
+  });
+  lHTML+='</tbody></table>';
+  document.getElementById('leaderSection').innerHTML=lHTML;
+
+  // === HEATMAP ===
+  if(depts.length>1){
+    const dims=[{k:'avgPerf',l:'Perf',m:5},{k:'avgCulture',l:'Culture',m:5},{k:'perfQ1',l:'PQ1',m:5},{k:'perfQ2',l:'PQ2',m:5},{k:'perfQ3',l:'PQ3',m:5},{k:'cultureQ1',l:'CQ1',m:5},{k:'cultureQ2',l:'CQ2',m:5}];
+    let hHTML='<table class="hm-table"><thead><tr><th>Team</th>';
+    dims.forEach(d=>{hHTML+='<th>'+d.l+'</th>';});
+    hHTML+='<th>Rockstar%</th></tr></thead><tbody>';
+    depts.forEach(dept=>{
+      const dd=data.filter(d=>d.department===dept);
+      hHTML+='<tr><td>'+dept+'</td>';
+      dims.forEach(dim=>{
+        const v=avg(dd.map(d=>d[dim.k]));
+        hHTML+='<td><span class="hm-cell" style="background:'+hmBg(v,dim.m)+';color:'+nC(v,dim.m)+'">'+f(v)+'</span></td>';
+      });
+      const rk=Math.round(dd.filter(d=>d.outcomeKey==='rockstar').length/dd.length*100);
+      hHTML+='<td><span class="hm-cell" style="background:'+(rk>=60?'rgba(29,158,117,0.2)':rk>=40?'rgba(55,138,221,0.15)':'rgba(226,75,74,0.2)')+';color:'+(rk>=60?'#34d399':rk>=40?'#60a5fa':'#f87171')+'">'+rk+'%</span></td>';
+      hHTML+='</tr>';
+    });
+    hHTML+='</tbody></table>';
+    document.getElementById('heatmapSection').innerHTML=hHTML;
+  } else {
+    document.getElementById('heatmapSection').innerHTML='<div class="empty-state">Need 2+ teams for heatmap</div>';
+  }
+
+  // === TOP PERFORMERS ===
+  const rockstars=data.filter(d=>d.outcomeKey==='rockstar').sort((a,b)=>b.avgPerf-a.avgPerf).slice(0,10);
+  document.getElementById('topSection').innerHTML=rockstars.length?
+    rockstars.map((d,i)=>'<div class="rank-row"><span class="rank-num rank-green">'+(i+1)+'</span><span class="rank-label">'+d.employee+'<br><span style="font-size:0.5rem;color:rgba(255,255,255,0.2)">'+d.department+' &middot; '+d.role+'</span></span><span class="rank-val" style="color:#34d399">'+f(d.avgPerf)+' / '+f(d.avgCulture)+'</span></div>').join(''):
+    '<div class="empty-state">No Rockstars in this period</div>';
+
+  // === RISK RADAR ===
+  const atRisk=data.filter(d=>d.outcomeKey==='exit'||d.outcomeKey==='wip').sort((a,b)=>a.avgPerf-b.avgPerf).slice(0,10);
+  document.getElementById('riskSection').innerHTML=atRisk.length?
+    atRisk.map((d,i)=>'<div class="rank-row"><span class="rank-num rank-red">'+(i+1)+'</span><span class="rank-label">'+d.employee+'<br><span style="font-size:0.5rem;color:rgba(255,255,255,0.2)">'+d.department+' &middot; '+d.role+'</span></span><span class="badge-sm '+badgeCls(d.outcomeKey)+' rank-badge">'+badgeLabel(d.outcomeKey)+'</span><span class="rank-val" style="color:#f87171">'+f(d.avgPerf)+' / '+f(d.avgCulture)+'</span></div>').join(''):
+    '<div class="empty-state">No WIP/Exit in this period</div>';
+
+  // === MONTH-OVER-MONTH TREND ===
+  const periods=[...new Set(allData.map(d=>d.period))].filter(Boolean).sort();
+  if(periods.length>1){
+    let trHTML='<table class="t"><thead><tr><th>Period</th><th>Reviews</th><th>Avg Perf</th><th>Avg Culture</th><th>Rockstar %</th><th>WIP/Exit %</th></tr></thead><tbody>';
+    periods.forEach(p=>{
+      const dd=allData.filter(d=>d.period===p);
+      const rk=Math.round(dd.filter(d=>d.outcomeKey==='rockstar').length/dd.length*100);
+      const ri=Math.round(dd.filter(d=>d.outcomeKey==='wip'||d.outcomeKey==='exit').length/dd.length*100);
+      trHTML+='<tr><td style="font-weight:700">'+p+'</td><td>'+dd.length+'</td><td class="num" style="color:'+nC(avg(dd.map(d=>d.avgPerf)),5)+'">'+f(avg(dd.map(d=>d.avgPerf)))+'</td><td class="num" style="color:'+nC(avg(dd.map(d=>d.avgCulture)),5)+'">'+f(avg(dd.map(d=>d.avgCulture)))+'</td><td style="color:#34d399">'+rk+'%</td><td style="color:'+(ri>=30?'#f87171':'#fbbf24')+'">'+ri+'%</td></tr>';
+    });
+    trHTML+='</tbody></table>';
+    document.getElementById('trendSection').innerHTML=trHTML;
+  } else {
+    document.getElementById('trendSection').innerHTML='<div class="empty-state">Need 2+ months for trend analysis</div>';
+  }
+
+  // === QUESTION-LEVEL BREAKDOWN ===
+  const qDims=[
+    {g:'Performance',color:'var(--accent)',items:[
+      {k:'perfQ1',l:'Performance Question 1'},{k:'perfQ2',l:'Performance Question 2'},{k:'perfQ3',l:'Performance Question 3'}
+    ]},
+    {g:'Culture',color:'var(--accent2)',items:[
+      {k:'cultureQ1',l:'Culture Question 1'},{k:'cultureQ2',l:'Culture Question 2'}
+    ]}
+  ];
+  let qHTML='';
+  qDims.forEach(g=>{
+    qHTML+='<div style="font-size:0.55rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:'+g.color+';margin-top:12px;margin-bottom:6px;padding-top:8px;border-top:1px solid var(--border)">'+g.g+'</div>';
+    g.items.forEach(item=>{
+      const vals=data.map(d=>d[item.k]).filter(v=>v>0);
+      const a=vals.length?avg(vals):0;
+      const pct=a?(a/5*100).toFixed(0):0;
+      const barColor=a>=4?'#1D9E75':a>=3?'#378ADD':a>=2?'#EF9F27':'#E24B4A';
+      qHTML+='<div class="pulse-row"><div class="pulse-label">'+item.l+'</div><div class="pulse-bar-wrap"><div class="pulse-bar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div><div class="pulse-avg" style="color:'+barColor+'">'+f(a)+'</div></div>';
+    });
+  });
+  document.getElementById('questionSection').innerHTML=qHTML;
+
+  // === FEEDBACK ===
+  let comments=[];
+  data.forEach(d=>{
+    if(d.feedback&&d.feedback!=='—'&&d.feedback.trim())comments.push({text:d.feedback,type:'Feedback',cls:'ct-feedback',emp:d.employee,dept:d.department,period:d.period});
+    if(d.notes&&d.notes!=='—'&&d.notes.trim())comments.push({text:d.notes,type:'Manager Notes',cls:'ct-notes',emp:d.employee,dept:d.department,period:d.period});
+  });
+  document.getElementById('feedbackSection').innerHTML=comments.length?
+    comments.map(c=>'<div class="comment"><span class="comment-type '+c.cls+'">'+c.type+'</span>'+c.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<div class="comment-meta">'+c.emp+' &middot; '+c.dept+' &middot; '+c.period+'</div></div>').join(''):
+    '<div class="empty-state">No feedback recorded</div>';
+}
+</script>
+</body>
+</html>
