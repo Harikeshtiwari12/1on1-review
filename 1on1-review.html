@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly 1-on-1 Review · 10x Growth</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;padding:2rem 1rem}
+.container{max-width:900px;margin:0 auto}
+h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.subtitle{font-size:13px;color:#888;margin-bottom:1.5rem}
+select,input,textarea{font-family:inherit;font-size:14px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;width:100%;outline:none}
+select:focus,input:focus,textarea:focus{border-color:#888}
+textarea{resize:vertical;min-height:72px;line-height:1.6}
+.lbl{font-size:12px;color:#888;margin-bottom:4px;font-weight:600;letter-spacing:0.03em}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.col{flex:1;min-width:150px}
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:1.5rem}
+.emp-btn{padding:10px 12px;border:1px solid #e0e0e0;border-radius:10px;background:#fff;cursor:pointer;text-align:left;transition:all 0.15s;position:relative}
+.emp-btn:hover{border-color:#aaa}
+.emp-btn.active{border-color:#1D9E75;background:#E1F5EE}
+.emp-btn.done-month{border-color:#EF9F27;background:#FEFBF3}
+.emp-name{font-size:13px;font-weight:600;color:#1a1a1a}
+.emp-role{font-size:11px;color:#888;margin-top:2px}
+.emp-btn.active .emp-name{color:#085041}
+.emp-btn.active .emp-role{color:#0F6E56}
+.emp-btn.done-month .emp-name{color:#633806}
+.emp-btn.done-month .emp-role{color:#A06020}
+.done-dot{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:#EF9F27}
+.section-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:6px;margin-bottom:10px}
+.tag-perf{background:#E6F1FB;color:#0C447C}
+.tag-culture{background:#EEEDFE;color:#3C3489}
+.q-card{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:10px}
+.q-card.perf{border:1px solid #B5D4F4}
+.q-card.culture{border:1px solid #CECBF6}
+.q-num{font-size:10px;font-weight:700;color:#aaa;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}
+.q-text{font-size:13px;color:#1a1a1a;line-height:1.65;margin-bottom:12px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.rb{padding:5px 11px;font-size:11px;border:1px solid #e0e0e0;border-radius:8px;background:#f7f7f7;color:#666;cursor:pointer;transition:all 0.15s;font-weight:500}
+.rb:hover{border-color:#aaa}
+.rb.s1{background:#FCEBEB;border-color:#E24B4A;color:#791F1F}
+.rb.s2{background:#FAEEDA;border-color:#EF9F27;color:#633806}
+.rb.s3{background:#E6F1FB;border-color:#378ADD;color:#0C447C}
+.rb.s4{background:#EAF3DE;border-color:#639922;color:#27500A}
+.rb.s5{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem}
+.score-card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem}
+.score-card.perf{border-top:3px solid #378ADD}
+.score-card.culture{border-top:3px solid #7F77DD}
+.sc-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.sc-val{font-size:26px;font-weight:700;color:#1a1a1a;margin-bottom:8px}
+.prog-wrap{height:5px;background:#eee;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width 0.4s ease}
+.outcome-box{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1.25rem;margin-top:12px}
+.outcome-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.outcome-badge{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:10px;font-size:16px;font-weight:700;margin-bottom:8px}
+.o-rockstar{background:#E1F5EE;color:#085041;border:1px solid #1D9E75}
+.o-wip{background:#E6F1FB;color:#0C447C;border:1px solid #378ADD}
+.o-pip{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
+.o-exit{background:#FCEBEB;color:#791F1F;border:1px solid #E24B4A}
+.outcome-desc{font-size:12px;color:#888;display:block}
+.note{font-size:11px;color:#bbb;margin-top:6px}
+.matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.matrix-item{padding:10px 14px;border-radius:10px;font-size:12px}
+.m-label{font-weight:700;font-size:13px;margin-bottom:3px}
+.m-desc{font-size:11px;opacity:0.85}
+.btn-row{display:flex;gap:8px;margin-top:1rem}
+.save-btn{flex:1;padding:11px;font-size:14px;font-weight:700;cursor:pointer;border-radius:10px;border:none;background:#1a1a1a;color:#fff;transition:all 0.15s}
+.save-btn:hover{background:#333}
+.save-btn.editing{background:#085041}
+.save-btn.editing:hover{background:#0F6E56}
+.cancel-btn{padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;border:1px solid #ddd;background:#fff;color:#666;transition:all 0.15s}
+.cancel-btn:hover{border-color:#aaa;color:#333}
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem}
+.tab{padding:8px 18px;font-size:13px;font-weight:500;border:1px solid #ddd;border-radius:8px;background:#fff;color:#888;cursor:pointer;transition:all 0.15s}
+.tab:hover{border-color:#aaa;color:#333}
+.tab.on{background:#1a1a1a;border-color:#1a1a1a;color:#fff}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1.2rem;background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:10px 14px}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:#555;font-weight:500}
+.ld{width:9px;height:9px;border-radius:50%}
+.saved-item{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.saved-item-top{display:flex;align-items:center;gap:12px}
+.si-name{font-size:13px;font-weight:600;color:#1a1a1a}
+.si-sub{font-size:11px;color:#888;margin-top:2px}
+.si-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;white-space:nowrap}
+.si-scores{font-size:11px;color:#aaa;text-align:center;min-width:90px}
+.si-actions{display:flex;gap:6px;margin-top:10px;border-top:1px solid #f0f0f0;padding-top:10px}
+.si-note{font-size:12px;color:#666;margin-top:8px;padding:8px 10px;background:#f9f9f9;border-radius:6px;border-left:3px solid #ddd;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.act-btn{padding:5px 12px;font-size:11px;font-weight:600;border-radius:7px;cursor:pointer;border:1px solid #e0e0e0;background:#f7f7f7;color:#555;transition:all 0.15s}
+.act-btn:hover{border-color:#aaa;color:#1a1a1a}
+.act-btn.danger{color:#791F1F;border-color:#E24B4A;background:#FCEBEB}
+.act-btn.danger:hover{background:#f8d0d0}
+.empty{font-size:13px;color:#bbb;padding:2rem;text-align:center;background:#fff;border:1px dashed #ddd;border-radius:10px}
+.sect-hd{font-size:10px;font-weight:700;color:#bbb;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+.q-section-head{font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:16px;padding:10px 14px;background:#f0f0ee;border-radius:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.editing-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;background:#E1F5EE;color:#085041;border:1px solid #1D9E75}
+.header-bar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:0.2rem;flex-wrap:wrap;gap:8px}
+.divider{height:1px;background:#eee;margin:1.2rem 0}
+.summary-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;margin-right:6px;margin-bottom:8px}
+.dup-warn{background:#FAEEDA;border:1px solid #EF9F27;border-radius:10px;padding:10px 14px;font-size:12px;color:#633806;font-weight:500;margin-bottom:10px;display:none}
+.dup-warn.show{display:block}
+.period-label{font-size:11px;font-weight:700;color:#085041;background:#E1F5EE;border:1px solid #1D9E75;padding:3px 10px;border-radius:6px}
+.export-btn{padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;border-radius:8px;border:1px solid #ddd;background:#fff;color:#555;transition:all 0.15s}
+.export-btn:hover{border-color:#aaa;color:#1a1a1a}
+.filter-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.notes-card{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem;margin-top:12px}
+.notes-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+@media(max-width:500px){.score-grid{grid-template-columns:1fr}.matrix-grid{grid-template-columns:1fr}.saved-item-top{flex-wrap:wrap}}
+
+/* ── Micro-interactions ── */
+@keyframes rb-pop{0%{transform:scale(1)}40%{transform:scale(1.22)}70%{transform:scale(0.94)}100%{transform:scale(1)}}
+.rb.popping{animation:rb-pop 0.22s ease}
+@keyframes score-glow-perf{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(55,138,221,0.18)}}
+@keyframes score-glow-cult{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(127,119,221,0.18)}}
+.score-card.perf.pulsing{animation:score-glow-perf 0.5s ease}
+.score-card.culture.pulsing{animation:score-glow-cult 0.5s ease}
+@keyframes outcome-in{from{opacity:0;transform:translateY(5px) scale(0.96)}to{opacity:1;transform:none}}
+.outcome-badge{animation:outcome-in 0.28s ease}
+
+/* ── Toast notifications ── */
+#toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.18);opacity:0;transform:translateY(10px);transition:opacity 0.22s ease,transform 0.22s ease;max-width:340px;display:flex;align-items:center;gap:9px;line-height:1.4}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:#085041}
+.toast.error{background:#791F1F}
+.toast.warn{background:#633806}
+
+/* ── Review progress bar ── */
+.review-progress{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:12px}
+.review-progress.show{display:flex}
+.rp-label{font-size:12px;font-weight:600;color:#555;white-space:nowrap}
+.rp-bar-wrap{flex:1;height:6px;background:#eee;border-radius:4px;overflow:hidden}
+.rp-bar-fill{height:100%;border-radius:4px;background:#1D9E75;transition:width 0.45s ease}
+.rp-count{font-size:12px;font-weight:700;color:#1a1a1a;white-space:nowrap}
+.full-team-badge{background:#E1F5EE;border:1px solid #1D9E75;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:700;color:#085041;text-align:center;margin-bottom:12px;display:none}
+.full-team-badge.show{display:block}
+
+/* ── Employee history badges ── */
+.emp-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;display:inline-block;margin-top:5px;letter-spacing:0.03em}
+.eb-consistent{background:#1a1a1a;color:#fff}
+.eb-rising{background:#E6F1FB;color:#0C447C}
+.eb-risk{background:#FCEBEB;color:#791F1F}
+.eb-turnaround{background:#EAF3DE;color:#27500A}
+
+/* ── Notes character counter ── */
+.notes-counter{font-size:11px;margin-top:5px;font-weight:600;transition:color 0.2s}
+.notes-counter.ok{color:#1D9E75}
+.notes-counter.short{color:#aaa}
+.notes-counter.warn{color:#E24B4A}
+
+/* ── Trajectory arrows ── */
+.traj{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:6px;vertical-align:middle}
+.traj.up{background:#E1F5EE;color:#085041}
+.traj.down{background:#FCEBEB;color:#791F1F}
+.traj.same{background:#f0f0f0;color:#888}
+
+/* ── Login screen ── */
+#login-screen{position:fixed;inset:0;background:#f5f5f3;z-index:999;display:flex;align-items:center;justify-content:center;padding:2rem 1rem}
+.login-wrap{width:100%;max-width:600px}
+.login-title{font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+.login-sub{font-size:13px;color:#888;text-align:center;margin-bottom:2rem}
+.login-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.user-card{padding:14px 16px;border:1px solid #e0e0e0;border-radius:12px;background:#fff;cursor:pointer;text-align:left;transition:all 0.15s}
+.user-card:hover{border-color:#aaa;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.user-card.admin{border-color:#1D9E75;background:#E1F5EE}
+.user-card.admin:hover{border-color:#085041}
+.uc-name{font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:3px}
+.uc-dept{font-size:11px;color:#888}
+.user-card.admin .uc-name{color:#085041}
+.user-card.admin .uc-dept{color:#0F6E56;font-weight:600}
+.admin-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:#1a1a1a;color:#fff;padding:2px 7px;border-radius:4px;margin-bottom:6px}
+
+/* ── Top user bar ── */
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:8px 14px;margin-bottom:1.2rem;gap:12px;flex-wrap:wrap}
+.ub-info{font-size:13px;color:#1a1a1a;font-weight:600}
+.ub-dept{font-size:11px;color:#888;margin-top:2px}
+.logout-btn{font-size:11px;font-weight:700;padding:5px 12px;border-radius:7px;border:1px solid #ddd;background:#f7f7f7;color:#555;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.logout-btn:hover{border-color:#aaa;color:#1a1a1a}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-title">Monthly 1-on-1 Review</div>
+    <div class="login-sub">10x Growth &nbsp;·&nbsp; Select your name to continue</div>
+    <div class="login-grid" id="login-grid"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="container" id="app" style="display:none">
+  <div class="header-bar" style="margin-bottom:0.8rem">
+    <div>
+      <h1>Monthly 1-on-1 Review</h1>
+      <p class="subtitle" style="margin-bottom:0">3 Performance questions (role-based) &nbsp;+&nbsp; 2 Culture questions (common to all)</p>
+    </div>
+    <span style="font-size:12px;color:#aaa">10x Growth · Evaluation Matrix</span>
+  </div>
+
+  <div class="user-bar" id="user-bar"></div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <!-- RATE PANEL -->
+  <div id="panel-rate">
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#E24B4A"></div>1 · Needs improvement</div>
+      <div class="li"><div class="ld" style="background:#EF9F27"></div>2 · Developing</div>
+      <div class="li"><div class="ld" style="background:#378ADD"></div>3 · Meets expectations</div>
+      <div class="li"><div class="ld" style="background:#639922"></div>4 · Exceeds expectations</div>
+      <div class="li"><div class="ld" style="background:#1D9E75"></div>5 · 10x ready</div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div class="lbl">Review period</div>
+        <div style="display:flex;gap:8px">
+          <select id="period-month" onchange="onPeriodChange()" style="flex:1.5"></select>
+          <select id="period-year" onchange="onPeriodChange()" style="flex:1"></select>
+        </div>
+      </div>
+      <div class="col">
+        <div class="lbl">Department</div>
+        <select id="dept-sel" onchange="onDeptChange()"></select>
+      </div>
+    </div>
+
+    <div class="sect-hd">Select employee</div>
+    <div class="review-progress" id="review-progress">
+      <span class="rp-label">This month:</span>
+      <div class="rp-bar-wrap"><div class="rp-bar-fill" id="rp-fill" style="width:0%"></div></div>
+      <span class="rp-count" id="rp-count">0 / 0</span>
+    </div>
+    <div class="full-team-badge" id="full-team-badge">✅ Full team reviewed this month!</div>
+    <div id="dup-warn" class="dup-warn">
+      ⚠️ <span id="dup-warn-text"></span>
+    </div>
+    <div class="emp-grid" id="emp-grid"></div>
+
+    <div id="q-section" style="display:none">
+      <div class="q-section-head">
+        <span id="q-head"></span>
+        <span id="editing-badge" class="editing-badge" style="display:none">Editing saved record</span>
+      </div>
+
+      <div class="section-tag tag-perf">Performance · Role-based (3 questions)</div>
+      <div id="q-perf-wrap"></div>
+
+      <div class="divider"></div>
+
+      <div class="section-tag tag-culture">Culture · Common to all (2 questions)</div>
+      <div id="q-culture-wrap"></div>
+
+      <div class="score-grid">
+        <div class="score-card perf">
+          <div class="sc-lbl">Performance score</div>
+          <div class="sc-val" id="sc-perf">—</div>
+          <div class="prog-wrap"><div class="prog-fill" id="prog-perf" style="width:0%;background:#378ADD"></div></div>
+        </div>
+        <div class="score-card culture">
+          <div class="sc-lbl">Culture score</div>
+          <div class="sc-val" id="sc-cult">—</div>
+          <div class="prog-wrap"><div class="prog-fill" id="prog-cult" style="width:0%;background:#7F77DD"></div></div>
+        </div>
+      </div>
+
+      <div class="outcome-box">
+        <div class="outcome-lbl">Evaluation outcome</div>
+        <div id="outcome-wrap"><div class="note">Rate at least one performance and one culture question to see the outcome.</div></div>
+      </div>
+
+      <div class="notes-card">
+        <div class="notes-lbl">Manager notes &amp; observations <span style="color:#E24B4A;font-weight:700">* Required</span></div>
+        <textarea id="review-notes" placeholder="Required — add detailed observations, agreed action items, coaching points, or follow-ups from this 1-on-1..." oninput="onNotesChange()"></textarea>
+        <div class="notes-counter short" id="notes-counter">0 characters · 20 minimum required</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="save-btn" id="save-btn" onclick="saveRec()">Save record</button>
+        <button class="cancel-btn" id="cancel-btn" onclick="cancelEdit()" style="display:none">Cancel</button>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem">
+      <div class="sect-hd">Evaluation matrix reference</div>
+      <div class="matrix-grid">
+        <div class="matrix-item o-rockstar">
+          <div class="m-label">Rockstar</div>
+          <div class="m-desc">Good Performance + Good Culture<br>Recognition &amp; Responsibilities</div>
+        </div>
+        <div class="matrix-item o-wip">
+          <div class="m-label">WIP</div>
+          <div class="m-desc">Good Performance + Weak Culture<br>3-Month Plan to Rockstar</div>
+        </div>
+        <div class="matrix-item o-pip">
+          <div class="m-label">PIP</div>
+          <div class="m-desc">Weak Performance + Good Culture<br>1-Month Warning</div>
+        </div>
+        <div class="matrix-item o-exit">
+          <div class="m-label">Exit</div>
+          <div class="m-desc">Weak Performance + Weak Culture<br>Immediate Action</div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">Good = avg score &ge; 3.5 out of 5 &nbsp;·&nbsp; Weak = avg score &lt; 3.5 out of 5</div>
+    </div>
+  </div>
+
+  <!-- SAVED PANEL -->
+  <div id="panel-saved" style="display:none">
+    <div class="row">
+      <div class="col">
+        <div class="lbl">Filter by period</div>
+        <select id="filter-period" onchange="renderSaved()">
+          <option value="">All periods</option>
+        </select>
+      </div>
+      <div class="col">
+        <div class="lbl">Filter by department</div>
+        <select id="filter-dept" onchange="renderSaved()"></select>
+      </div>
+      <div class="col">
+        <div class="lbl">Filter by outcome</div>
+        <select id="filter-outcome" onchange="renderSaved()">
+          <option value="">All outcomes</option>
+          <option>Rockstar</option><option>WIP</option><option>PIP</option><option>Exit</option>
+        </select>
+      </div>
+      <div class="col">
+        <div class="lbl">Search by name</div>
+        <input id="filter-name" placeholder="Search..." oninput="renderSaved()">
+      </div>
+    </div>
+    <div class="filter-bar">
+      <div id="saved-count" style="font-size:13px;font-weight:600;color:#888"></div>
+      <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+    <div id="saved-wrap"><div class="empty">No records saved yet. Go to Rate Employees to begin.</div></div>
+  </div>
+</div><!-- end #app -->
+
+<script>
+const STORAGE_KEY='1on1_review_v1';
+const SESSION_KEY='1on1_session_v1';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbyiWdeYAB9OjP7hZ8AkjDFIVSONWFoqMmw82QuT8y55fgXSr0ANETbjnHySm4PN8f6C/exec';
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const CULTURE_QS=[
+  "When you disagree with a decision made above you — do you push back, stay silent, or find another way? Give me a real example of how you handled it.",
+  "Tell me about a time you helped a teammate who was struggling — without being asked to, and without getting credit for it."
+];
+
+const depts=[
+  {name:"Channel Partnerships",leader:"Atul Naharwara",members:[
+    {name:"Saurabh Agarwal",role:"Channel Partnership Sales"},
+    {name:"Zack",role:"Channel Partnership Sales"},
+    {name:"Aatif",role:"Channel Partnership Sales"},
+    {name:"Varun Ashok",role:"Channel Partnership Sales"},
+    {name:"Leonard Jojy",role:"Channel Partnership Sales"}
+  ],qs:[
+    "What's your pipeline value this month — and how confident are you in closing it, and why?",
+    "Which partner is underperforming and what have YOU already done about it — without being told?",
+    "What would it take for you to double your partner output next quarter — and what's stopping you right now?"
+  ]},
+  {name:"Sales",leader:"Adarsh Sikaria",members:[
+    {name:"Abhas Maheshwari",role:"Program Manager Digital Sales"},
+    {name:"Abhishek Tiwari",role:"Growth Manager Digital Sales"},
+    {name:"Himanshu Jain",role:"Inside Sales Manager"},
+    {name:"Ankit Pandey",role:"Inside Sales"},
+    {name:"Sakshi Goyal",role:"Inside Sales"},
+{name:"Jeet Popat",role:"Sales Development Representative"},
+    {name:"Ali Akbar Sayyad",role:"Sales Development Representative"},
+    {name:"Divya Jyothi",role:"Sales Development Representative"}
+  ],qs:[
+    "Walk me through your conversion rate — from lead to close — and tell me exactly where deals are falling apart.",
+    "How well do you know the product — could you demo it right now without any preparation?",
+    "What would help you close 20% more deals next month — and why haven't you done it yet?"
+  ]},
+  {name:"Product",leader:"Sharad Sen Sharma",members:[
+    {name:"Shailesh Jaiswal",role:"Product Engineer"},
+    {name:"Mansi Garg",role:"Data Analyst"}
+  ],qs:[
+    "What are your top 3 priorities right now — and tell me the reasoning behind that prioritisation.",
+    "Walk me through a recent decision you made — what data drove it and what was the outcome?",
+    "What's one thing in our product that you believe is genuinely broken — and what's your proposed fix?"
+  ]},
+  {name:"Engineering",leader:"Rohan Sen Sharma",members:[
+    {name:"Suneet Choudhary",role:"Engineering Manager"},
+    {name:"Sanket Patel",role:"Engineering Manager"},
+    {name:"Himanshu Mishra",role:"Software Developer II"},
+    {name:"Neeraj Prasad Singh",role:"Software Developer II"},
+    {name:"Sumanth Gowda",role:"Quality Assurance Testing"},
+    {name:"Harshit Gupta",role:"Software Developer II"},
+    {name:"Faizal Mahmood",role:"Software Developer II"},
+    {name:"Pratik Mahajan",role:"Software Developer II"},
+    {name:"Deveshi Dwivedi",role:"Software Development Intern"},
+    {name:"Shreyas Katake",role:"Software Development Intern"},
+    {name:"Bhakti Karkera",role:"Quality Assurance Testing"},
+    {name:"Amruta Tivarekar",role:"Quality Assurance Testing"}
+  ],qs:[
+    "What are you currently building — and will it ship on time? If not, when did you know and why didn't you flag it earlier?",
+    "What technical debt are you aware of right now that you keep working around instead of fixing?",
+    "What one skill or tool would make you significantly more effective — and what have you done to acquire it?"
+  ]},
+  {name:"Customer Experience",leader:"Shabib Karjikar",members:[
+    {name:"Vivian",role:"Customer Success Manager"},
+    {name:"Prem Jadhav",role:"Customer Success Manager"},
+    {name:"Anoop S Kumar",role:"Customer Success Manager"},
+    {name:"Gaurav Yerunkar",role:"Customer Success Manager"},
+    {name:"Krushna Belapurkar",role:"Customer Success Manager"},
+    {name:"Shubham Singh",role:"Product Expert"},
+    {name:"Shobna Gunder",role:"Product Expert"},
+    {name:"Dolly Kadukar",role:"Product Expert"},
+{name:"Meet Yadav",role:"Product Expert"},
+    {name:"Shishir Raj",role:"Customer Delight"},
+    {name:"Pranit Jadhav",role:"Customer Delight"},
+    {name:"Shagun Deora",role:"Inside Sales"}
+  ],qs:[
+    "Which customer is at the highest risk of churning right now — and what have you already done about it, without me asking?",
+    "Can you name the top 3 business goals of your most important customers right now?",
+    "How do you measure whether a customer is actually getting value from the product — not just whether they're happy?"
+  ]},
+  {name:"Growth Marketing",leader:"Mudit Sharma",members:[
+    {name:"Vrushank Timbadia",role:"Design"},
+    {name:"Koushik Narendar",role:"Performance Marketing / User Acquisition"}
+  ],qs:[
+    "What's your current Cost Per Acquisition — and is it going up or down? What's driving that trend?",
+    "What experiment did you run recently — what did you test, what did the data say, and what did you change?",
+    "What growth opportunity have you identified that we haven't acted on yet — and what's your case for prioritising it?"
+  ]},
+  {name:"Leadership Team",leader:"Ritesh Kumar",members:[
+    {name:"Mudit Sharma",role:"Growth, Marketing & AI Project Head"},
+    {name:"Harikesh Tiwari",role:"Head of People"},
+    {name:"Atul Naharwara",role:"Head of Channel Partnerships"},
+    {name:"Shabib Karjikar",role:"Lead Customer Success (Interim Head)"},
+    {name:"Adarsh Sikaria",role:"Head of Digital Sales / Business"},
+    {name:"Mudit Mehta",role:"Finance Associate"}
+  ],qs:[
+    "What's the single biggest thing slowing your team down — and what have you done to remove that blocker without waiting for me?",
+    "What decision have you been avoiding that you know needs to be made — and why haven't you made it yet?",
+    "If we had to grow 10x in the next 18 months — what does your team need to look different, and are you the right person to lead that version?"
+  ]}
+];
+
+// ── Per-designation performance questions ──────────────────────────────────
+const roleQuestionsMap={
+  "Channel Partnership Sales":[
+    "Tell me how your performance was this month — how are you tracking your pipeline and partner numbers, and what's the biggest problem you're running into right now?",
+    "Which partner account needs the most attention right now — and what specific action have you already taken in the last two weeks to move it forward?",
+    "What's one thing about the way you're working your territory that you'd change if you started this month over again?"
+  ],
+  "Program Manager Digital Sales":[
+    "Tell me how your performance was this month — which programs are on track, which aren't, and what's the biggest blocker you're dealing with?",
+    "Where are the gaps between what the sales team actually needs and what's being delivered — and what are you personally doing to close that gap?",
+    "What's one programme or initiative you own that isn't performing as expected — and what's your plan to fix it?"
+  ],
+  "Growth Manager Digital Sales":[
+    "Tell me how your performance was this month — what growth levers did you pull, how did they perform, and what's the biggest problem you're solving right now?",
+    "Walk me through one experiment or initiative that delivered results this month — what did you learn and how are you applying it going forward?",
+    "Where is growth stalling in your funnel — what's your hypothesis for why, and what are you actively testing to fix it?"
+  ],
+  "Inside Sales Manager":[
+    "Tell me how your team's performance was this month — how are you tracking against targets, and what's the biggest problem your team is facing right now?",
+    "Which rep on your team needs the most coaching right now — and what are you doing about it, specifically, not in general?",
+    "What's one change you made to your team's process or approach this month — and what measurable impact did it have?"
+  ],
+  "Inside Sales":[
+    "Tell me how your performance was this month — how are you tracking against your target, and what's the biggest problem you're running into?",
+    "Walk me through your last 3 deals — which did you close, which did you lose, and what was the real reason behind each loss?",
+    "What's one thing you're doing differently in your sales conversations this month compared to last — and is it actually working?"
+  ],
+  "Sales Development Representative":[
+    "Tell me how your performance was this month — how many qualified meetings did you book, how are you tracking against your quota, and what's your biggest challenge?",
+    "What's your current outreach-to-connect ratio — and what specific things are you doing to improve it?",
+    "Which part of your prospecting process feels weakest right now — and what are you actively doing to fix it?"
+  ],
+  "Product Engineer":[
+    "Tell me how your performance was this month — what did you ship, are you on track, and what's the biggest technical or product problem you're working through?",
+    "Walk me through one product decision you made this month — what data or reasoning drove it, and would you make the same call again?",
+    "What part of the product do you think is most broken or poorly designed right now — and do you have a concrete proposal to fix it?"
+  ],
+  "Data Analyst":[
+    "Tell me how your performance was this month — what analyses did you deliver, how are you tracking on your priorities, and what's the biggest problem you're dealing with?",
+    "Walk me through one insight you surfaced this month — how did you find it, what action did it drive, and did the action work?",
+    "Where in our data do you think we have the biggest blind spots right now — and what would it take to fix them?"
+  ],
+  "Engineering Manager":[
+    "Tell me how your team performed this month — are you on track with your roadmap, and what's the biggest problem you're managing right now?",
+    "Which engineer on your team is most stuck or struggling — and what are you specifically doing to unblock or develop them?",
+    "What's one thing about how your team operates that you'd change immediately if you had full authority to do it today?"
+  ],
+  "Software Developer II":[
+    "Tell me how your performance was this month — what did you build, will it ship on time, and what's the biggest technical problem you're dealing with?",
+    "What's one piece of technical debt or code quality issue you keep working around instead of addressing — and why hasn't it been fixed yet?",
+    "What's one skill or tool that would make you meaningfully more effective — and what have you concretely done to develop it?"
+  ],
+  "Software Development Intern":[
+    "Tell me how your performance was this month — what did you work on, how are you tracking against what was expected, and where are you currently stuck?",
+    "What's one thing you learned this month that genuinely changed how you think about or approach your work?",
+    "Where do you feel most out of your depth right now — and what specific steps are you taking to close that gap?"
+  ],
+  "Quality Assurance Testing":[
+    "Tell me how your performance was this month — what did you test, what critical bugs did you catch, and what's the biggest quality risk you're tracking right now?",
+    "What part of the product do you think has the weakest test coverage right now — and what's your plan to address it?",
+    "What's one thing about the current QA process that's slowing you down or reducing quality — and what would you change?"
+  ],
+  "Customer Success Manager":[
+    "The biggest problem was managed last month — walk me through it. What happened, what did you do, and what was the outcome?",
+    "Which customer is closest to churning — and what have you already done about it without being told to?",
+    "Top 3 business goals of your highest-value customer right now — what are they and how is our product helping them get there?"
+  ],
+  "Product Expert":[
+    "Tell me how your performance was this month — how are you tracking on your support and product metrics, and what's the biggest problem you're dealing with?",
+    "What's the most common complaint or confusion customers are having about the product right now — and what are you doing about it beyond just logging the ticket?",
+    "How deeply do you know the product — could you demo every major feature right now without preparation? Where are your actual gaps?"
+  ],
+  "Customer Delight":[
+    "Tell me how your performance was this month — how is your CSAT or delight metric tracking, and what's the biggest challenge you're working through?",
+    "Walk me through one customer interaction this month where you genuinely turned a frustrated customer around — what did you do and what was the outcome?",
+    "What's one thing in the current customer experience process that you think is letting customers down — and what's your specific idea to fix it?"
+  ],
+  "Design":[
+    "Tell me how your performance was this month — what did you design, is your work aligned with where the product is heading, and what's the biggest problem you're working through?",
+    "Walk me through one design decision you made this month — what was the problem, what options did you consider, and how did you validate your solution was right?",
+    "What part of our current product design do you think is most broken, inconsistent, or confusing to users — and what's your proposed fix?"
+  ],
+  "Product Manager":[
+    "Tell me how your performance was this month — what did you ship, are your current priorities still the right ones, and what's the biggest problem you're managing?",
+    "Walk me through the last significant roadmap decision you made — what data drove it, who did you align with, and what was the outcome?",
+    "What's one thing on our current product roadmap that you think we shouldn't be building — and why haven't you pushed back on it yet?"
+  ],
+  "Performance Marketing / User Acquisition":[
+    "Tell me how your performance was this month — what are your CAC and ROAS numbers, are you on track, and what's the biggest problem in your campaigns right now?",
+    "Walk me through one experiment you ran this month — what was your hypothesis, what did the data show, and what did you change as a result?",
+    "Where do you think there's the most untapped growth opportunity in your current channels — and what's your concrete plan to go after it?"
+  ],
+  "Data Analyst Intern":[
+    "Tell me how your performance was this month — what analyses did you complete, how are you tracking against what was expected, and where are you stuck?",
+    "Walk me through one piece of analysis you did this month — what was the question, how did you approach it, and what did you find?",
+    "What's one thing about how we currently use data that you think could be better — and do you have a concrete idea for how to improve it?"
+  ],
+  "Growth, Marketing & AI Project Head":[
+    "Tell me how your team performed this month — are you hitting your growth and marketing targets, and what's the single biggest blocker you're dealing with right now?",
+    "What decision have you been sitting on that you know needs to be made — and what specifically is holding you back from making it?",
+    "If your team had to deliver 2x the output next quarter with the same headcount — what would you cut, and what would you double down on?"
+  ],
+  "Head of People":[
+    "Tell me how you performed this month — what's the health of the org, what people risks are you actively tracking, and what's the biggest problem you're managing?",
+    "What's one people problem in the company that you know exists but hasn't been addressed yet — and what's your plan to deal with it?",
+    "If we needed to scale headcount by 50% in the next 6 months — where are we most unprepared, and what's the first thing you would do?"
+  ],
+  "Head of Channel Partnerships":[
+    "Tell me how your team performed this month — are you hitting your channel targets, and what's the biggest problem in your partner ecosystem right now?",
+    "Which partnership is underdelivering relative to its potential — and what have you already done to address it without waiting to be asked?",
+    "What would it take to double your channel revenue in the next two quarters — and what's the single biggest thing standing in the way right now?"
+  ],
+  "Lead Customer Success (Interim Head)":[
+    "Tell me how your team performed this month — what's the retention rate, what's the account health score, and what's the biggest risk you're managing?",
+    "Which customer relationship is most at risk right now — and what's your specific, concrete plan to turn it around?",
+    "What's one structural or process problem in how we do customer success that you would change immediately if you had full authority to do it?"
+  ],
+  "Head of Digital Sales / Business":[
+    "Tell me how your team performed this month — are you hitting revenue targets, and what's the single biggest problem in the sales process right now?",
+    "Where is the biggest drop-off in your funnel — and what have you already done to address it without waiting to be told?",
+    "If you had to grow digital sales revenue by 30% next quarter — what would you change, and what would you stop doing entirely?"
+  ],
+  "Finance Associate":[
+    "Tell me how your performance was this month — what are you on track with, what's delayed, and what's the biggest financial problem or risk you're tracking right now?",
+    "What's one process in how we currently manage finances that you think is inefficient or creates unnecessary risk — and what's your recommendation to fix it?",
+    "Walk me through the most important financial insight you surfaced this month — and what action did it drive, or should it drive?"
+  ]
+};
+
+const OUTCOMES={
+  rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
+  wip:{label:'WIP',desc:'3-Month Plan to Rockstar',cls:'o-wip'},
+  pip:{label:'PIP',desc:'1-Month Warning',cls:'o-pip'},
+  exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
+};
+
+// ── Users (leaders + admin) ────────────────────────────────────────────────
+const users=[
+  {name:'Ritesh Kumar',      title:'CEO',                  deptIndex:-1, isAdmin:true, slug:'ritesh'},
+  {name:'Atul Naharwara',    title:'Channel Partnerships', deptIndex:0,  slug:'atul'},
+  {name:'Adarsh Sikaria',    title:'Sales',                deptIndex:1,  slug:'adarsh'},
+  {name:'Sharad Sen Sharma', title:'Co-Founder',           deptIndex:-1, isAdmin:true, slug:'sharad'},
+  {name:'Rohan Sen Sharma',  title:'Co-Founder',           deptIndex:-1, isAdmin:true, slug:'rohan'},
+  {name:'Shabib Karjikar',   title:'Customer Experience',  deptIndex:4,  slug:'shabib'},
+  {name:'Mudit Sharma',      title:'Growth Marketing',     deptIndex:5,  slug:'mudit'},
+];
+
+// ── Toast notifications ────────────────────────────────────────────────────
+function showToast(msg,type='success'){
+  const wrap=document.getElementById('toast-wrap');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  const icon={success:'✓',error:'✕',warn:'⚠'}[type]||'✓';
+  t.innerHTML=`<span style="font-size:15px">${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),280);},3500);
+}
+
+// ── Employee history badge ─────────────────────────────────────────────────
+function getEmpBadge(empName,deptName){
+  const rank={rockstar:4,wip:3,pip:2,exit:1};
+  const hist=saved.filter(s=>s.name===empName&&s.dept===deptName)
+    .sort((a,b)=>b.period.localeCompare(a.period));
+  if(!hist.length)return'';
+  const outcomes=hist.slice(0,3).map(h=>h.outcome);
+  if(outcomes.length>=3&&outcomes.every(o=>o==='rockstar'))
+    return'<div class="emp-badge eb-consistent">🏆 Consistent Rockstar</div>';
+  if(outcomes.length>=2&&(outcomes[1]==='pip'||outcomes[1]==='exit')&&outcomes[0]==='rockstar')
+    return'<div class="emp-badge eb-turnaround">🔄 Turnaround</div>';
+  if(outcomes.length>=2&&rank[outcomes[0]]>rank[outcomes[1]])
+    return'<div class="emp-badge eb-rising">📈 On the Rise</div>';
+  if(outcomes.length>=2&&(outcomes[0]==='pip'||outcomes[0]==='exit')&&(outcomes[1]==='pip'||outcomes[1]==='exit'))
+    return'<div class="emp-badge eb-risk">⚠ Needs Attention</div>';
+  return'';
+}
+
+// ── Trajectory arrow ───────────────────────────────────────────────────────
+function getTraj(s){
+  const rank={rockstar:4,wip:3,pip:2,exit:1};
+  const prev=saved
+    .filter(r=>r.name===s.name&&r.dept===s.dept&&r.id!==s.id&&r.period.localeCompare(s.period)<0)
+    .sort((a,b)=>b.period.localeCompare(a.period))[0];
+  if(!prev)return'';
+  const diff=rank[s.outcome]-rank[prev.outcome];
+  if(diff>0)return`<span class="traj up">↑ from ${prev.outcomeLabel}</span>`;
+  if(diff<0)return`<span class="traj down">↓ from ${prev.outcomeLabel}</span>`;
+  return`<span class="traj same">→ same</span>`;
+}
+
+// ── Review progress ────────────────────────────────────────────────────────
+function renderProgress(){
+  const d=depts[selDept];
+  const pk=periodKey(selMonth,selYear);
+  const total=d.members.length;
+  const done=d.members.filter(m=>saved.some(s=>s.dept===d.name&&s.name===m.name&&s.period===pk)).length;
+  const prog=document.getElementById('review-progress');
+  prog.classList.add('show');
+  document.getElementById('rp-fill').style.width=Math.round((done/total)*100)+'%';
+  document.getElementById('rp-count').textContent=done+' / '+total+' reviewed';
+  document.getElementById('full-team-badge').classList.toggle('show',done===total&&total>0);
+}
+
+// ── State ──────────────────────────────────────────────────────────────────
+let currentUser=null;
+let perfRatings=[0,0,0],cultureRatings=[0,0],selEmp=null,selDept=0;
+let selMonth=new Date().getMonth(),selYear=new Date().getFullYear();
+let notes='',editingId=null;
+let saved=[];
+
+// ── Persistence ────────────────────────────────────────────────────────────
+function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(saved));}catch(e){}}
+function hydrate(){try{const d=localStorage.getItem(STORAGE_KEY);if(d)saved=JSON.parse(d);}catch(e){saved=[];}}
+function syncToSheet(record){
+  if(!SHEET_URL) return;
+  const payload={
+    period:       record.period,
+    employee:     record.name,
+    role:         record.role,
+    department:   record.dept,
+    perfQ1:       record.perfRatings[0],
+    perfQ2:       record.perfRatings[1],
+    perfQ3:       record.perfRatings[2],
+    cultureQ1:    record.cultureRatings[0],
+    cultureQ2:    record.cultureRatings[1],
+    avgPerf:      record.perfScore,
+    avgCulture:   record.cultScore,
+    outcome:      record.outcomeLabel,
+    notes:        record.notes,
+    dateReviewed: record.date,
+    submittedBy:  currentUser.name
+  };
+  console.log('[syncToSheet] payload:', JSON.stringify(payload));
+  fetch(SHEET_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(payload)
+  }).catch(()=>{}); // silent fail — local save already done
+}
+
+// ── Utils ──────────────────────────────────────────────────────────────────
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function getOutcome(pa,ca){const gp=pa>=3.5,gc=ca>=3.5;if(gp&&gc)return'rockstar';if(gp&&!gc)return'wip';if(!gp&&gc)return'pip';return'exit';}
+function avgOf(arr){const f=arr.filter(r=>r>0);return f.length?f.reduce((a,b)=>a+b,0)/f.length:null;}
+function periodKey(m,y){return`${MONTHS[m]} ${y}`;}
+function csvEscape(v){const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s;}
+
+// ── Login / logout ─────────────────────────────────────────────────────────
+function buildLoginScreen(){
+  document.getElementById('login-grid').innerHTML=users.map((u,i)=>`
+    <button class="user-card${u.isAdmin?' admin':''}" onclick="doLogin(${i})">
+      ${u.isAdmin?'<div class="admin-tag">Admin · All Teams</div>':''}
+      <div class="uc-name">${u.name}</div>
+      <div class="uc-dept">${u.title}</div>
+    </button>`).join('');
+}
+
+function doLogin(i){
+  currentUser=users[i];
+  try{sessionStorage.setItem(SESSION_KEY,JSON.stringify(i));}catch(e){}
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  initApp();
+}
+
+function logout(){
+  currentUser=null;
+  try{sessionStorage.removeItem(SESSION_KEY);}catch(e){}
+  // Reset form state
+  selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';editingId=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+function renderUserBar(){
+  const u=currentUser;
+  const switchBtn=u.directLink?'':' <button class="logout-btn" onclick="logout()">Switch user</button>';
+  document.getElementById('user-bar').innerHTML=`
+    <div>
+      <div class="ub-info">${u.name}${u.isAdmin?' <span style="font-size:10px;background:#1a1a1a;color:#fff;padding:2px 7px;border-radius:4px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;vertical-align:middle">Admin</span>':''}</div>
+      <div class="ub-dept">${u.isAdmin?'Viewing all teams':'Viewing: '+u.title}</div>
+    </div>${switchBtn}`;
+}
+
+// ── Period selectors ────────────────────────────────────────────────────────
+function buildPeriodSelects(){
+  const mSel=document.getElementById('period-month');
+  const ySel=document.getElementById('period-year');
+  mSel.innerHTML=MONTHS.map((m,i)=>`<option value="${i}"${i===selMonth?' selected':''}>${m}</option>`).join('');
+  const curY=new Date().getFullYear();
+  ySel.innerHTML=[curY-1,curY,curY+1].map(y=>`<option value="${y}"${y===selYear?' selected':''}>${y}</option>`).join('');
+}
+function onPeriodChange(){
+  selMonth=parseInt(document.getElementById('period-month').value);
+  selYear=parseInt(document.getElementById('period-year').value);
+  selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';editingId=null;
+  document.getElementById('q-section').style.display='none';
+  renderEmpGrid();
+  checkDupWarn();
+}
+
+// ── Tabs ────────────────────────────────────────────────────────────────────
+function buildTabs(){
+  document.getElementById('tabs').innerHTML=['Rate Employees','Saved Records'].map((l,i)=>`<button class="tab${i===0?' on':''}" onclick="switchTab(${i})">${l}</button>`).join('');
+}
+function switchTab(i){
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('on',i===j));
+  document.getElementById('panel-rate').style.display=i===0?'block':'none';
+  document.getElementById('panel-saved').style.display=i===1?'block':'none';
+  if(i===1){populatePeriodFilter();renderSaved();}
+}
+
+// ── Department/Employee ─────────────────────────────────────────────────────
+function buildDeptSelect(){
+  if(currentUser.isAdmin){
+    // Admin: full dropdown + full filter
+    document.getElementById('dept-sel').innerHTML=depts.map((d,i)=>`<option value="${i}">${d.name} — ${d.leader}</option>`).join('');
+    document.getElementById('dept-sel').disabled=false;
+    document.getElementById('filter-dept').innerHTML='<option value="-1">All departments</option>'+depts.map((d,i)=>`<option value="${i}">${d.name}</option>`).join('');
+    document.getElementById('filter-dept').closest('.col').style.display='';
+  } else {
+    // Leader: locked to their dept
+    const di=currentUser.deptIndex;
+    const d=depts[di];
+    document.getElementById('dept-sel').innerHTML=`<option value="${di}">${d.name} — ${d.leader}</option>`;
+    document.getElementById('dept-sel').disabled=true;
+    selDept=di;
+    // Hide dept filter in Saved Records
+    document.getElementById('filter-dept').innerHTML=`<option value="${di}">${d.name}</option>`;
+    document.getElementById('filter-dept').closest('.col').style.display='none';
+  }
+}
+function onDeptChange(){
+  selDept=parseInt(document.getElementById('dept-sel').value);
+  selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';editingId=null;
+  document.getElementById('q-section').style.display='none';
+  document.getElementById('editing-badge').style.display='none';
+  document.getElementById('save-btn').textContent='Save record';
+  document.getElementById('save-btn').className='save-btn';
+  document.getElementById('cancel-btn').style.display='none';
+  renderEmpGrid();
+  checkDupWarn();
+}
+
+function hasDupForPeriod(deptName, empName){
+  const pk=periodKey(selMonth,selYear);
+  return saved.find(s=>s.dept===deptName&&s.name===empName&&s.period===pk&&s.id!==editingId);
+}
+
+function checkDupWarn(){
+  const warn=document.getElementById('dup-warn');
+  const d=depts[selDept];
+  const dups=d.members.filter(m=>hasDupForPeriod(d.name,m.name));
+  if(dups.length){
+    document.getElementById('dup-warn-text').textContent=`${dups.map(m=>m.name).join(', ')} already reviewed for ${periodKey(selMonth,selYear)}. Selecting them will let you edit the existing record.`;
+    warn.classList.add('show');
+  } else {
+    warn.classList.remove('show');
+  }
+}
+
+function renderEmpGrid(){
+  const d=depts[selDept];
+  const pk=periodKey(selMonth,selYear);
+  document.getElementById('emp-grid').innerHTML=d.members.map((m,i)=>{
+    const isDone=saved.some(s=>s.dept===d.name&&s.name===m.name&&s.period===pk);
+    const isActive=selEmp===i;
+    const badge=getEmpBadge(m.name,d.name);
+    return `<button class="emp-btn${isActive?' active':''}${isDone&&!isActive?' done-month':''}" onclick="selectEmp(${i})">
+      ${isDone&&!isActive?'<div class="done-dot" title="Reviewed this period"></div>':''}
+      <div class="emp-name">${m.name}</div>
+      <div class="emp-role">${m.role}</div>
+      ${badge}
+    </button>`;
+  }).join('');
+  renderProgress();
+}
+
+function rbl(r){return['Needs improvement','Developing','Meets expectations','Exceeds expectations','10x ready'][r-1];}
+
+function selectEmp(i){
+  const d=depts[selDept];
+  const m=d.members[i];
+  const pk=periodKey(selMonth,selYear);
+  const existing=saved.find(s=>s.dept===d.name&&s.name===m.name&&s.period===pk);
+
+  // Auto-load existing record for editing if one exists
+  if(existing){
+    editingId=existing.id;
+    perfRatings=[...existing.perfRatings];
+    cultureRatings=[...existing.cultureRatings];
+    notes=existing.notes||'';
+    document.getElementById('editing-badge').style.display='inline-flex';
+    document.getElementById('save-btn').textContent='Update record';
+    document.getElementById('save-btn').className='save-btn editing';
+    document.getElementById('cancel-btn').style.display='block';
+  } else {
+    editingId=null;
+    perfRatings=[0,0,0];cultureRatings=[0,0];notes='';
+    document.getElementById('editing-badge').style.display='none';
+    document.getElementById('save-btn').textContent='Save record';
+    document.getElementById('save-btn').className='save-btn';
+    document.getElementById('cancel-btn').style.display='none';
+  }
+
+  selEmp=i;
+  renderEmpGrid();
+  document.getElementById('q-head').textContent='Questions for '+m.name+' · '+m.role;
+  document.getElementById('q-section').style.display='block';
+  document.getElementById('review-notes').value=notes;
+  onNotesChange();
+
+  const roleQs=roleQuestionsMap[m.role]||d.qs;
+  document.getElementById('q-perf-wrap').innerHTML=roleQs.map((q,qi)=>`<div class="q-card perf">
+    <div class="q-num">Performance Q${qi+1} · ${d.leader} asking</div>
+    <div class="q-text">${q}</div>
+    <div class="btns">${[1,2,3,4,5].map(r=>`<button class="rb${perfRatings[qi]===r?' s'+r:''}" onclick="ratePerf(${qi},${r},this)">${r} — ${rbl(r)}</button>`).join('')}</div>
+  </div>`).join('');
+
+  document.getElementById('q-culture-wrap').innerHTML=CULTURE_QS.map((q,qi)=>`<div class="q-card culture">
+    <div class="q-num">Culture Q${qi+1} · Common to all</div>
+    <div class="q-text">${q}</div>
+    <div class="btns">${[1,2,3,4,5].map(r=>`<button class="rb${cultureRatings[qi]===r?' s'+r:''}" onclick="rateCulture(${qi},${r},this)">${r} — ${rbl(r)}</button>`).join('')}</div>
+  </div>`).join('');
+
+  updateScore();
+  document.getElementById('q-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function ratePerf(qi,val,btn){
+  perfRatings[qi]=val;
+  btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
+  btn.classList.add('s'+val,'popping');
+  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
+  updateScore('perf');
+}
+function rateCulture(qi,val,btn){
+  cultureRatings[qi]=val;
+  btn.closest('.btns').querySelectorAll('.rb').forEach(b=>b.className='rb');
+  btn.classList.add('s'+val,'popping');
+  btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
+  updateScore('culture');
+}
+function onNotesChange(){
+  const ta=document.getElementById('review-notes');
+  notes=ta.value;
+  const len=notes.trim().length;
+  const counter=document.getElementById('notes-counter');
+  if(len===0){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
+  else if(len<20){counter.textContent=len+' characters · '+(20-len)+' more needed';counter.className='notes-counter warn';}
+  else{counter.textContent=len+' characters ✓';counter.className='notes-counter ok';}
+  if(len>=20){ta.style.borderColor='';ta.style.boxShadow='';}
+}
+
+function updateScore(pulseSide){
+  const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
+  if(pa!==null){document.getElementById('sc-perf').textContent=pa.toFixed(1)+' / 5';document.getElementById('prog-perf').style.width=Math.round((pa/5)*100)+'%';}
+  else{document.getElementById('sc-perf').textContent='—';document.getElementById('prog-perf').style.width='0%';}
+  if(ca!==null){document.getElementById('sc-cult').textContent=ca.toFixed(1)+' / 5';document.getElementById('prog-cult').style.width=Math.round((ca/5)*100)+'%';}
+  else{document.getElementById('sc-cult').textContent='—';document.getElementById('prog-cult').style.width='0%';}
+  // Pulse the relevant score card
+  if(pulseSide){
+    const card=document.querySelector('.score-card.'+(pulseSide==='perf'?'perf':'culture'));
+    if(card){card.classList.add('pulsing');card.addEventListener('animationend',()=>card.classList.remove('pulsing'),{once:true});}
+  }
+  const ow=document.getElementById('outcome-wrap');
+  if(pa!==null&&ca!==null){
+    const key=getOutcome(pa,ca),o=OUTCOMES[key];
+    const pl=pa>=3.5?'Good Performance':'Weak Performance',cl=ca>=3.5?'Good Culture':'Weak Culture';
+    ow.innerHTML=`<div class="outcome-badge ${o.cls}">${o.label}</div><span class="outcome-desc">${o.desc}</span><div class="note" style="margin-top:10px">${pl} (${pa.toFixed(1)}) + ${cl} (${ca.toFixed(1)})</div>`;
+  } else {
+    ow.innerHTML=`<div class="note">Rate at least one performance and one culture question to see the outcome.</div>`;
+  }
+}
+
+function saveRec(){
+  if(selEmp===null){showToast('Please select an employee first.','warn');return;}
+  const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
+  if(pa===null||ca===null){showToast('Please rate at least one performance and one culture question.','warn');return;}
+  const ta=document.getElementById('review-notes');
+  notes=ta.value;
+  if(notes.trim().length<20){
+    ta.focus();
+    ta.style.borderColor='#E24B4A';
+    ta.style.boxShadow='0 0 0 3px rgba(226,75,74,0.15)';
+    showToast('Manager notes required — add at least 20 characters.','error');
+    return;
+  }
+  const d=depts[selDept],m=d.members[selEmp],key=getOutcome(pa,ca),o=OUTCOMES[key];
+  const pk=periodKey(selMonth,selYear);
+  const record={
+    id: editingId||uid(),
+    name: m.name, role: m.role, dept: d.name,
+    period: pk,
+    perfScore: pa.toFixed(1), cultScore: ca.toFixed(1),
+    perfRatings: [...perfRatings], cultureRatings: [...cultureRatings],
+    outcome: key, outcomeLabel: o.label, outcomeCls: o.cls,
+    notes: notes,
+    date: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
+  };
+  if(editingId){
+    const idx=saved.findIndex(s=>s.id===editingId);
+    if(idx!==-1)saved[idx]=record;
+    else saved.push(record);
+  } else {
+    saved.push(record);
+  }
+  persist();
+  syncToSheet(record);
+  const isUpdate=!!editingId;
+  resetForm();
+  switchTab(1);
+  showToast((isUpdate?'Updated':'Saved')+' · '+record.name+' · '+o.label,'success');
+}
+
+function cancelEdit(){
+  resetForm();
+}
+
+function resetForm(){
+  selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';editingId=null;
+  document.getElementById('q-section').style.display='none';
+  document.getElementById('editing-badge').style.display='none';
+  document.getElementById('save-btn').textContent='Save record';
+  document.getElementById('save-btn').className='save-btn';
+  document.getElementById('cancel-btn').style.display='none';
+  const counter=document.getElementById('notes-counter');
+  if(counter){counter.textContent='0 characters · 20 minimum required';counter.className='notes-counter short';}
+  const ta=document.getElementById('review-notes');
+  if(ta){ta.style.borderColor='';ta.style.boxShadow='';}
+  renderEmpGrid();
+  checkDupWarn();
+}
+
+function editRecord(id){
+  const rec=saved.find(s=>s.id===id);
+  if(!rec)return;
+  const di=depts.findIndex(d=>d.name===rec.dept);
+  if(di===-1)return;
+  if(!currentUser.isAdmin&&di!==currentUser.deptIndex)return;
+  // Set period
+  const parts=rec.period.split(' ');
+  selMonth=MONTHS.indexOf(parts[0]);
+  selYear=parseInt(parts[1]);
+  document.getElementById('period-month').value=selMonth;
+  document.getElementById('period-year').value=selYear;
+  // Set dept
+  selDept=di;
+  document.getElementById('dept-sel').value=di;
+  renderEmpGrid();
+  // Find emp index
+  const ei=depts[di].members.findIndex(m=>m.name===rec.name);
+  if(ei===-1)return;
+  switchTab(0);
+  setTimeout(()=>selectEmp(ei),50);
+}
+
+function deleteRecord(id){
+  const rec=saved.find(s=>s.id===id);
+  if(!rec)return;
+  const di=depts.findIndex(d=>d.name===rec.dept);
+  if(!currentUser.isAdmin&&di!==currentUser.deptIndex)return;
+  if(!confirm(`Delete record for ${rec.name} (${rec.period})? This cannot be undone.`))return;
+  saved=saved.filter(s=>s.id!==id);
+  persist();
+  populatePeriodFilter();
+  renderSaved();
+  showToast('Record deleted · '+rec.name,'warn');
+}
+
+// ── Saved records panel ─────────────────────────────────────────────────────
+function populatePeriodFilter(){
+  const periods=[...new Set(saved.map(s=>s.period))];
+  const sel=document.getElementById('filter-period');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All periods</option>'+periods.map(p=>`<option value="${p}"${p===cur?' selected':''}>${p}</option>`).join('');
+}
+
+function renderSaved(){
+  const di=currentUser.isAdmin
+    ? parseInt(document.getElementById('filter-dept').value)
+    : currentUser.deptIndex;
+  const oc=document.getElementById('filter-outcome').value.toLowerCase();
+  const nm=document.getElementById('filter-name').value.toLowerCase();
+  const per=document.getElementById('filter-period').value;
+  let list=saved.filter(s=>
+    (currentUser.isAdmin?(di===-1||depts.findIndex(d=>d.name===s.dept)===di):(s.dept===depts[di].name))&&
+    (!oc||s.outcomeLabel.toLowerCase()===oc)&&
+    s.name.toLowerCase().includes(nm)&&
+    (!per||s.period===per)
+  );
+  const w=document.getElementById('saved-wrap');
+  document.getElementById('saved-count').textContent=`${list.length} record${list.length!==1?'s':''}`;
+  if(!list.length){w.innerHTML='<div class="empty">No records found.</div>';return;}
+
+  const counts={rockstar:0,wip:0,pip:0,exit:0};
+  list.forEach(s=>counts[s.outcome]=(counts[s.outcome]||0)+1);
+  const sp='summary-pill';
+  let summary=`<div style="margin-bottom:12px">
+    ${counts.rockstar?`<span class="${sp} o-rockstar">Rockstar: ${counts.rockstar}</span>`:''}
+    ${counts.wip?`<span class="${sp} o-wip">WIP: ${counts.wip}</span>`:''}
+    ${counts.pip?`<span class="${sp} o-pip">PIP: ${counts.pip}</span>`:''}
+    ${counts.exit?`<span class="${sp} o-exit">Exit: ${counts.exit}</span>`:''}
+  </div>`;
+
+  w.innerHTML=summary+list.map(s=>`
+    <div class="saved-item">
+      <div class="saved-item-top">
+        <div style="flex:1">
+          <div class="si-name">${s.name}</div>
+          <div class="si-sub">${s.role} · ${s.dept}</div>
+          <div class="si-sub" style="margin-top:3px">
+            <span class="period-label">${s.period}</span>
+            <span style="margin-left:6px;color:#bbb">Reviewed ${s.date}</span>
+          </div>
+        </div>
+        <div class="si-scores">Perf ${s.perfScore}<br>Cult ${s.cultScore}</div>
+        <div><span class="si-badge ${s.outcomeCls}">${s.outcomeLabel}</span>${getTraj(s)}</div>
+      </div>
+      ${s.notes?`<div class="si-note">${escHtml(s.notes)}</div>`:''}
+      <div class="si-actions">
+        <button class="act-btn" onclick="editRecord('${s.id}')">Edit</button>
+        <button class="act-btn danger" onclick="deleteRecord('${s.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── CSV Export ──────────────────────────────────────────────────────────────
+function exportCSV(){
+  if(!saved.length){showToast('No records to export.','warn');return;}
+  const headers=['Period','Employee','Role','Department','Perf Q1','Perf Q2','Perf Q3','Culture Q1','Culture Q2','Avg Performance','Avg Culture','Outcome','Notes','Date Reviewed'];
+  const exportable=currentUser.isAdmin?saved:saved.filter(s=>s.dept===depts[currentUser.deptIndex].name);
+  if(!exportable.length){showToast('No records to export.','warn');return;}
+  const rows=exportable.map(s=>[
+    s.period, s.name, s.role, s.dept,
+    s.perfRatings[0]||'', s.perfRatings[1]||'', s.perfRatings[2]||'',
+    s.cultureRatings[0]||'', s.cultureRatings[1]||'',
+    s.perfScore, s.cultScore,
+    s.outcomeLabel, s.notes||'', s.date
+  ].map(csvEscape).join(','));
+  const csv=[headers.join(','),...rows].join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`1on1-reviews-${Date.now()}.csv`;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ── Init ────────────────────────────────────────────────────────────────────
+function initApp(){
+  renderUserBar();
+  buildTabs();
+  buildDeptSelect();
+  buildPeriodSelects();
+  onDeptChange();
+}
+
+hydrate();
+buildLoginScreen();
+
+// Direct-link auto-login via URL hash (e.g. 1on1-review.html#atul)
+(function(){
+  const hash=location.hash.replace('#','').toLowerCase().trim();
+  if(hash){
+    const u=users.find(x=>x.slug&&x.slug===hash);
+    if(u){
+      currentUser=Object.assign({},u,{directLink:true});
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      initApp();
+      return; // skip session restore
+    }
+  }
+  // Restore session if user refreshed the page
+  try{
+    const s=sessionStorage.getItem(SESSION_KEY);
+    if(s!==null){
+      const i=JSON.parse(s);
+      if(users[i]){
+        currentUser=users[i];
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app').style.display='block';
+        initApp();
+      }
+    }
+  }catch(e){}
+})();
+</script>
+<div id="toast-wrap"></div>
+</body>
+</html>
