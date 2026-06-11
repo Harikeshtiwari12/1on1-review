@@ -603,13 +603,13 @@ const OUTCOMES={
 
 // ── Users (leaders + admin) ────────────────────────────────────────────────
 const users=[
-  {name:'Ritesh Kumar',      title:'CEO',                  deptIndex:-1, isAdmin:true, slug:'ritesh'},
-  {name:'Atul Naharwara',    title:'Channel Partnerships', deptIndex:0,  slug:'atul'},
-  {name:'Adarsh Sikaria',    title:'Sales',                deptIndex:1,  slug:'adarsh'},
-  {name:'Sharad Sen Sharma', title:'Co-Founder',           deptIndex:-1, isAdmin:true, slug:'sharad'},
-  {name:'Rohan Sen Sharma',  title:'Co-Founder',           deptIndex:-1, isAdmin:true, slug:'rohan'},
-  {name:'Shabib Karjikar',   title:'Customer Experience',  deptIndex:4,  slug:'shabib'},
-  {name:'Mudit Sharma',      title:'Growth Marketing',     deptIndex:5,  slug:'mudit'},
+  {name:'Ritesh Kumar',      title:'CEO',                  deptIndex:-1, isAdmin:true, slug:'ritesh',  pin:'1001'},
+  {name:'Atul Naharwara',    title:'Channel Partnerships', deptIndex:0,  slug:'atul',    pin:'2001'},
+  {name:'Adarsh Sikaria',    title:'Sales',                deptIndex:1,  slug:'adarsh',  pin:'3001'},
+  {name:'Sharad Sen Sharma', title:'Co-Founder',           deptIndex:-1, isAdmin:true, slug:'sharad',  pin:'1002'},
+  {name:'Rohan Sen Sharma',  title:'Co-Founder',           deptIndex:-1, isAdmin:true, slug:'rohan',   pin:'1003'},
+  {name:'Shabib Karjikar',   title:'Customer Experience',  deptIndex:4,  slug:'shabib',  pin:'4001'},
+  {name:'Mudit Sharma',      title:'Growth Marketing',     deptIndex:5,  slug:'mudit',   pin:'5001'},
 ];
 
 // ── Toast notifications ────────────────────────────────────────────────────
@@ -816,11 +816,30 @@ function csvEscape(v){const s=String(v??'');return(s.includes(',')||s.includes('
 // ── Login / logout ─────────────────────────────────────────────────────────
 function buildLoginScreen(){
   document.getElementById('login-grid').innerHTML=users.map((u,i)=>`
-    <button class="user-card${u.isAdmin?' admin':''}" onclick="doLogin(${i})">
+    <button class="user-card${u.isAdmin?' admin':''}" onclick="showPinForUser(${i})">
       ${u.isAdmin?'<div class="admin-tag">Admin · All Teams</div>':''}
       <div class="uc-name">${u.name}</div>
       <div class="uc-dept">${u.title}</div>
     </button>`).join('');
+}
+
+function showPinForUser(i){
+  const u=users[i];
+  window._pendingUser=u;
+  window._pendingUserIndex=i;
+  const loginScreen=document.getElementById('login-screen');
+  loginScreen.querySelector('.login-wrap').innerHTML=`
+    <div class="login-title">Monthly 1-on-1 Review</div>
+    <div class="login-sub">Hi ${u.name} — enter your PIN to continue</div>
+    <div style="max-width:280px;margin:0 auto">
+      <input type="password" id="pin-input" maxlength="4" placeholder="Enter 4-digit PIN" style="font-family:inherit;font-size:18px;padding:14px;border:1px solid #ddd;border-radius:10px;width:100%;text-align:center;letter-spacing:0.3em;outline:none;font-weight:700;margin-bottom:12px">
+      <button onclick="verifyPin()" style="width:100%;padding:12px;font-family:inherit;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#1a1a1a;color:#fff;cursor:pointer;margin-bottom:8px">Verify &amp; Continue</button>
+      <button onclick="buildLoginScreen();document.getElementById('login-screen').querySelector('.login-wrap').insertAdjacentHTML('afterbegin','<div class=\\'login-title\\'>Monthly 1-on-1 Review</div><div class=\\'login-sub\\'>10x Growth · Select your name to continue</div>')" style="width:100%;padding:10px;font-family:inherit;font-size:12px;font-weight:600;border:1px solid #ddd;border-radius:10px;background:#fff;color:#888;cursor:pointer">← Back</button>
+      <div id="pin-error" style="font-size:12px;color:#E24B4A;margin-top:10px;display:none">Incorrect PIN. Try again.</div>
+    </div>
+  `;
+  document.getElementById('pin-input').addEventListener('keydown',function(e){if(e.key==='Enter')verifyPin();});
+  document.getElementById('pin-input').focus();
 }
 
 function doLogin(i){
@@ -1305,19 +1324,63 @@ saved.forEach(s=>{
 });
 persist();
 syncFromSheet(); // fetch records from Google Sheet for cross-browser visibility
+// PIN verification — works for both hash-link and login-screen
+function verifyPin(){
+  const input=document.getElementById('pin-input');
+  const u=window._pendingUser;
+  if(!u)return;
+  if(input.value===u.pin){
+    sessionStorage.setItem('1on1_pin_'+u.slug,'true');
+    // If came from login screen (not hash), use doLogin path
+    if(window._pendingUserIndex!==undefined){
+      doLogin(window._pendingUserIndex);
+    } else {
+      currentUser=Object.assign({},u,{directLink:true});
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('app').style.display='block';
+      initApp();
+    }
+  } else {
+    document.getElementById('pin-error').style.display='block';
+    input.value='';
+    input.focus();
+    input.style.borderColor='#E24B4A';
+    setTimeout(()=>{input.style.borderColor='#ddd';},1500);
+  }
+}
+
 buildLoginScreen();
 
-// Direct-link auto-login via URL hash (e.g. 1on1-review.html#atul)
+// Direct-link auto-login via URL hash — now requires PIN
 (function(){
   const hash=location.hash.replace('#','').toLowerCase().trim();
   if(hash){
     const u=users.find(x=>x.slug&&x.slug===hash);
     if(u){
-      currentUser=Object.assign({},u,{directLink:true});
-      document.getElementById('login-screen').style.display='none';
-      document.getElementById('app').style.display='block';
-      initApp();
-      return; // skip session restore
+      // Check if already verified this session
+      const verified=sessionStorage.getItem('1on1_pin_'+u.slug);
+      if(verified==='true'){
+        currentUser=Object.assign({},u,{directLink:true});
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app').style.display='block';
+        initApp();
+        return;
+      }
+      // Show PIN prompt
+      const loginScreen=document.getElementById('login-screen');
+      loginScreen.querySelector('.login-wrap').innerHTML=`
+        <div class="login-title">Monthly 1-on-1 Review</div>
+        <div class="login-sub">Hi ${u.name} — enter your PIN to continue</div>
+        <div style="max-width:280px;margin:0 auto">
+          <input type="password" id="pin-input" maxlength="4" placeholder="Enter 4-digit PIN" style="font-family:inherit;font-size:18px;padding:14px;border:1px solid #ddd;border-radius:10px;width:100%;text-align:center;letter-spacing:0.3em;outline:none;font-weight:700;margin-bottom:12px">
+          <button id="pin-btn" onclick="verifyPin()" style="width:100%;padding:12px;font-family:inherit;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#1a1a1a;color:#fff;cursor:pointer">Verify &amp; Continue</button>
+          <div id="pin-error" style="font-size:12px;color:#E24B4A;margin-top:10px;display:none">Incorrect PIN. Try again.</div>
+        </div>
+      `;
+      document.getElementById('pin-input').addEventListener('keydown',function(e){if(e.key==='Enter')verifyPin();});
+      document.getElementById('pin-input').focus();
+      window._pendingUser=u;
+      return;
     }
   }
   // Restore session if user refreshed the page
