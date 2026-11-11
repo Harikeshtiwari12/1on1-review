@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monthly 1-on-1 Review · 10x Growth</title>
+<title>Quarterly 1-on-1 Review · 10x Growth</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;padding:2rem 1rem}
@@ -184,7 +184,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 <!-- LOGIN SCREEN -->
 <div id="login-screen">
   <div class="login-wrap">
-    <div class="login-title">Monthly 1-on-1 Review</div>
+    <div class="login-title">Quarterly 1-on-1 Review</div>
     <div class="login-sub">10x Growth &nbsp;·&nbsp; Select your name to continue</div>
     <div class="login-grid" id="login-grid"></div>
   </div>
@@ -194,7 +194,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 <div class="container" id="app" style="display:none">
   <div class="header-bar" style="margin-bottom:0.8rem">
     <div>
-      <h1>Monthly 1-on-1 Review</h1>
+      <h1>Quarterly 1-on-1 Review</h1>
       <p class="subtitle" style="margin-bottom:0">3 Performance questions (role-based) &nbsp;+&nbsp; 2 Culture questions (common to all)</p>
     </div>
     <span style="font-size:12px;color:#aaa">10x Growth · Evaluation Matrix</span>
@@ -218,7 +218,7 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
       <div class="col">
         <div class="lbl">Review period</div>
         <div style="display:flex;gap:8px">
-          <select id="period-month" onchange="onPeriodChange()" style="flex:1.5"></select>
+          <select id="period-quarter" onchange="onPeriodChange()" style="flex:1.5"></select>
           <select id="period-year" onchange="onPeriodChange()" style="flex:1"></select>
         </div>
       </div>
@@ -230,11 +230,11 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 
     <div class="sect-hd">Select employee</div>
     <div class="review-progress" id="review-progress">
-      <span class="rp-label">This month:</span>
+      <span class="rp-label">This quarter:</span>
       <div class="rp-bar-wrap"><div class="rp-bar-fill" id="rp-fill" style="width:0%"></div></div>
       <span class="rp-count" id="rp-count">0 / 0</span>
     </div>
-    <div class="full-team-badge" id="full-team-badge">✅ Full team reviewed this month!</div>
+    <div class="full-team-badge" id="full-team-badge">✅ Full team reviewed this quarter!</div>
     <div id="dup-warn" class="dup-warn">
       ⚠️ <span id="dup-warn-text"></span>
     </div>
@@ -299,11 +299,11 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         </div>
         <div class="matrix-item o-pip">
           <div class="m-label">Likeable Star</div>
-          <div class="m-desc">Good Culture + Weak Performance<br>3-Months Coaching Plan</div>
+          <div class="m-desc">Good Culture + Weak Performance<br>1-Quarter Coaching Plan</div>
         </div>
         <div class="matrix-item o-wip">
           <div class="m-label">WIP</div>
-          <div class="m-desc">Good Performance + Weak Culture<br>1-Month Close Watch</div>
+          <div class="m-desc">Good Performance + Weak Culture<br>1-Quarter Close Watch</div>
         </div>
         <div class="matrix-item o-exit">
           <div class="m-label">Exit</div>
@@ -358,7 +358,7 @@ const SHEET_READ_URL='https://docs.google.com/spreadsheets/d/1EWdBpT0MhXIVibwsYK
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const CULTURE_QS=[
   "When you disagree with a decision made above you — do you push back, stay silent, or find another way? Give me a real example of how you handled it.",
-  "How do you communicate progress, blockers, and updates to your manager and teammates — proactively, or only when asked? Give me a specific example from this month where your communication made things better or worse."
+  "How do you communicate progress, blockers, and updates to your manager and teammates — proactively, or only when asked? Give me a specific example from this quarter where your communication made things better or worse."
 ];
 
 const depts=[
@@ -367,7 +367,7 @@ const depts=[
     {name:"Varun Ashok",role:"Channel Partnership Sales"},
     {name:"Leonard Jojy",role:"Channel Partnership Sales"}
   ],qs:[
-    "What's your pipeline value this month — and how confident are you in closing it, and why?",
+    "What's your pipeline value this quarter — and how confident are you in closing it, and why?",
     "Which partner is underperforming and what have YOU already done about it — without being told?",
     "What would it take for you to double your partner output next quarter — and what's stopping you right now?"
   ]},
@@ -386,7 +386,7 @@ const depts=[
   ],qs:[
     "Walk me through your conversion rate — from lead to close — and tell me exactly where deals are falling apart.",
     "How well do you know the product — could you demo it right now without any preparation?",
-    "What would help you close 20% more deals next month — and why haven't you done it yet?"
+    "What would help you close 20% more deals next quarter — and why haven't you done it yet?"
   ]},
   {name:"Product",leader:"Sharad Sen Sharma",members:[
     {name:"Shailesh Jaiswal",role:"Product Engineer"},
@@ -465,146 +465,146 @@ const depts=[
 // ── Per-designation performance questions ──────────────────────────────────
 const roleQuestionsMap={
   "Channel Partnership Sales":[
-    "Tell me how your performance was this month — how are you tracking your pipeline and partner numbers, and what's the biggest problem you're running into right now?",
+    "Tell me how your performance was this quarter — how are you tracking your pipeline and partner numbers, and what's the biggest problem you're running into right now?",
     "Which partner account needs the most attention right now — and what specific action have you already taken in the last two weeks to move it forward?",
-    "What's one thing about the way you're working your territory that you'd change if you started this month over again?"
+    "What's one thing about the way you're working your territory that you'd change if you started this quarter over again?"
   ],
   "Program Manager Digital Sales":[
-    "Tell me how your performance was this month — which programs are on track, which aren't, and what's the biggest blocker you're dealing with?",
+    "Tell me how your performance was this quarter — which programs are on track, which aren't, and what's the biggest blocker you're dealing with?",
     "Where are the gaps between what the sales team actually needs and what's being delivered — and what are you personally doing to close that gap?",
     "What's one programme or initiative you own that isn't performing as expected — and what's your plan to fix it?"
   ],
   "Growth Manager Digital Sales":[
-    "Tell me how your performance was this month — what growth levers did you pull, how did they perform, and what's the biggest problem you're solving right now?",
-    "Walk me through one experiment or initiative that delivered results this month — what did you learn and how are you applying it going forward?",
+    "Tell me how your performance was this quarter — what growth levers did you pull, how did they perform, and what's the biggest problem you're solving right now?",
+    "Walk me through one experiment or initiative that delivered results this quarter — what did you learn and how are you applying it going forward?",
     "Where is growth stalling in your funnel — what's your hypothesis for why, and what are you actively testing to fix it?"
   ],
   "Inside Sales Manager":[
-    "Tell me how your team's performance was this month — how are you tracking against targets, and what's the biggest problem your team is facing right now?",
+    "Tell me how your team's performance was this quarter — how are you tracking against targets, and what's the biggest problem your team is facing right now?",
     "Which rep on your team needs the most coaching right now — and what are you doing about it, specifically, not in general?",
-    "What's one change you made to your team's process or approach this month — and what measurable impact did it have?"
+    "What's one change you made to your team's process or approach this quarter — and what measurable impact did it have?"
   ],
   "Inside Sales":[
-    "Tell me how your performance was this month — how are you tracking against your target, and what's the biggest problem you're running into?",
+    "Tell me how your performance was this quarter — how are you tracking against your target, and what's the biggest problem you're running into?",
     "Walk me through your last 3 deals — which did you close, which did you lose, and what was the real reason behind each loss?",
-    "What's one thing you're doing differently in your sales conversations this month compared to last — and is it actually working?"
+    "What's one thing you're doing differently in your sales conversations this quarter compared to last — and is it actually working?"
   ],
   "Sales Development Representative":[
-    "Tell me how your performance was this month — how many qualified meetings did you book, how are you tracking against your quota, and what's your biggest challenge?",
+    "Tell me how your performance was this quarter — how many qualified meetings did you book, how are you tracking against your quota, and what's your biggest challenge?",
     "What's your current outreach-to-connect ratio — and what specific things are you doing to improve it?",
     "Which part of your prospecting process feels weakest right now — and what are you actively doing to fix it?"
   ],
   "Product Engineer":[
-    "Tell me how your performance was this month — what did you ship, are you on track, and what's the biggest technical or product problem you're working through?",
-    "Walk me through one product decision you made this month — what data or reasoning drove it, and would you make the same call again?",
+    "Tell me how your performance was this quarter — what did you ship, are you on track, and what's the biggest technical or product problem you're working through?",
+    "Walk me through one product decision you made this quarter — what data or reasoning drove it, and would you make the same call again?",
     "What part of the product do you think is most broken or poorly designed right now — and do you have a concrete proposal to fix it?"
   ],
   "Data Analyst":[
-    "Tell me how your performance was this month — what analyses did you deliver, how are you tracking on your priorities, and what's the biggest problem you're dealing with?",
-    "Walk me through one insight you surfaced this month — how did you find it, what action did it drive, and did the action work?",
+    "Tell me how your performance was this quarter — what analyses did you deliver, how are you tracking on your priorities, and what's the biggest problem you're dealing with?",
+    "Walk me through one insight you surfaced this quarter — how did you find it, what action did it drive, and did the action work?",
     "Where in our data do you think we have the biggest blind spots right now — and what would it take to fix them?"
   ],
   "Engineering Manager":[
-    "Tell me how your team performed this month — are you on track with your roadmap, and what's the biggest problem you're managing right now?",
+    "Tell me how your team performed this quarter — are you on track with your roadmap, and what's the biggest problem you're managing right now?",
     "Which engineer on your team is most stuck or struggling — and what are you specifically doing to unblock or develop them?",
     "What's one thing about how your team operates that you'd change immediately if you had full authority to do it today?"
   ],
   "Software Developer II":[
-    "Tell me how your performance was this month — what did you build, will it ship on time, and what's the biggest technical problem you're dealing with?",
+    "Tell me how your performance was this quarter — what did you build, will it ship on time, and what's the biggest technical problem you're dealing with?",
     "What's one piece of technical debt or code quality issue you keep working around instead of addressing — and why hasn't it been fixed yet?",
     "What's one skill or tool that would make you meaningfully more effective — and what have you concretely done to develop it?"
   ],
   "Software Development Intern":[
-    "Tell me how your performance was this month — what did you work on, how are you tracking against what was expected, and where are you currently stuck?",
-    "What's one thing you learned this month that genuinely changed how you think about or approach your work?",
+    "Tell me how your performance was this quarter — what did you work on, how are you tracking against what was expected, and where are you currently stuck?",
+    "What's one thing you learned this quarter that genuinely changed how you think about or approach your work?",
     "Where do you feel most out of your depth right now — and what specific steps are you taking to close that gap?"
   ],
   "Quality Assurance Testing":[
-    "Tell me how your performance was this month — what did you test, what critical bugs did you catch, and what's the biggest quality risk you're tracking right now?",
+    "Tell me how your performance was this quarter — what did you test, what critical bugs did you catch, and what's the biggest quality risk you're tracking right now?",
     "What part of the product do you think has the weakest test coverage right now — and what's your plan to address it?",
     "What's one thing about the current QA process that's slowing you down or reducing quality — and what would you change?"
   ],
   "Customer Success Manager":[
-    "The biggest problem was managed last month — walk me through it. What happened, what did you do, and what was the outcome?",
+    "The biggest problem was managed last quarter — walk me through it. What happened, what did you do, and what was the outcome?",
     "Which customer is closest to churning — and what have you already done about it without being told to?",
     "Top 3 business goals of your highest-value customer right now — what are they and how is our product helping them get there?"
   ],
   "Customer Success Manager (Ops)":[
-    "How are you managing your team this month — who's performing, who's struggling, and what have you done to coach or unblock them without being asked?",
-    "How many companies have completed training this month vs your target — what's slowing down the ones that haven't, and what's your plan to close the gap?",
-    "What's your ticket resolution rate this month — how many tickets were solved on time, how many breached SLA, and what are you doing to prevent repeat issues?"
+    "How are you managing your team this quarter — who's performing, who's struggling, and what have you done to coach or unblock them without being asked?",
+    "How many companies have completed training this quarter vs your target — what's slowing down the ones that haven't, and what's your plan to close the gap?",
+    "What's your ticket resolution rate this quarter — how many tickets were solved on time, how many breached SLA, and what are you doing to prevent repeat issues?"
   ],
   "Product Expert":[
-    "Tell me how your performance was this month — how are you tracking on your support and product metrics, and what's the biggest problem you're dealing with?",
+    "Tell me how your performance was this quarter — how are you tracking on your support and product metrics, and what's the biggest problem you're dealing with?",
     "What's the most common complaint or confusion customers are having about the product right now — and what are you doing about it beyond just logging the ticket?",
     "How deeply do you know the product — could you demo every major feature right now without preparation? Where are your actual gaps?"
   ],
   "Customer Delight":[
-    "Tell me how your performance was this month — how is your CSAT or delight metric tracking, and what's the biggest challenge you're working through?",
-    "Walk me through one customer interaction this month where you genuinely turned a frustrated customer around — what did you do and what was the outcome?",
+    "Tell me how your performance was this quarter — how is your CSAT or delight metric tracking, and what's the biggest challenge you're working through?",
+    "Walk me through one customer interaction this quarter where you genuinely turned a frustrated customer around — what did you do and what was the outcome?",
     "What's one thing in the current customer experience process that you think is letting customers down — and what's your specific idea to fix it?"
   ],
   "Design":[
-    "Tell me how your performance was this month — what did you design, is your work aligned with where the product is heading, and what's the biggest problem you're working through?",
-    "Walk me through one design decision you made this month — what was the problem, what options did you consider, and how did you validate your solution was right?",
+    "Tell me how your performance was this quarter — what did you design, is your work aligned with where the product is heading, and what's the biggest problem you're working through?",
+    "Walk me through one design decision you made this quarter — what was the problem, what options did you consider, and how did you validate your solution was right?",
     "What part of our current product design do you think is most broken, inconsistent, or confusing to users — and what's your proposed fix?"
   ],
   "Product Manager":[
-    "Tell me how your performance was this month — what did you ship, are your current priorities still the right ones, and what's the biggest problem you're managing?",
+    "Tell me how your performance was this quarter — what did you ship, are your current priorities still the right ones, and what's the biggest problem you're managing?",
     "Walk me through the last significant roadmap decision you made — what data drove it, who did you align with, and what was the outcome?",
     "What's one thing on our current product roadmap that you think we shouldn't be building — and why haven't you pushed back on it yet?"
   ],
   "KAM":[
-    "Tell me how your performance was this month — how are your key accounts tracking, what's the biggest risk, and what have you done to strengthen your top relationships?",
+    "Tell me how your performance was this quarter — how are your key accounts tracking, what's the biggest risk, and what have you done to strengthen your top relationships?",
     "Which key account needs the most attention right now — and what specific actions have you taken in the last two weeks to move it forward?",
-    "What's one thing about how you manage your accounts that you'd change if you could start this month over — and why haven't you changed it yet?"
+    "What's one thing about how you manage your accounts that you'd change if you could start this quarter over — and why haven't you changed it yet?"
   ],
   "Performance Marketing / User Acquisition":[
-    "Tell me how your performance was this month — what are your CAC and ROAS numbers, are you on track, and what's the biggest problem in your campaigns right now?",
-    "Walk me through one experiment you ran this month — what was your hypothesis, what did the data show, and what did you change as a result?",
+    "Tell me how your performance was this quarter — what are your CAC and ROAS numbers, are you on track, and what's the biggest problem in your campaigns right now?",
+    "Walk me through one experiment you ran this quarter — what was your hypothesis, what did the data show, and what did you change as a result?",
     "Where do you think there's the most untapped growth opportunity in your current channels — and what's your concrete plan to go after it?"
   ],
   "Data Analyst Intern":[
-    "Tell me how your performance was this month — what analyses did you complete, how are you tracking against what was expected, and where are you stuck?",
-    "Walk me through one piece of analysis you did this month — what was the question, how did you approach it, and what did you find?",
+    "Tell me how your performance was this quarter — what analyses did you complete, how are you tracking against what was expected, and where are you stuck?",
+    "Walk me through one piece of analysis you did this quarter — what was the question, how did you approach it, and what did you find?",
     "What's one thing about how we currently use data that you think could be better — and do you have a concrete idea for how to improve it?"
   ],
   "Growth, Marketing & AI Project Head":[
-    "Tell me how your team performed this month — are you hitting your growth and marketing targets, and what's the single biggest blocker you're dealing with right now?",
+    "Tell me how your team performed this quarter — are you hitting your growth and marketing targets, and what's the single biggest blocker you're dealing with right now?",
     "What decision have you been sitting on that you know needs to be made — and what specifically is holding you back from making it?",
     "If your team had to deliver 2x the output next quarter with the same headcount — what would you cut, and what would you double down on?"
   ],
   "Head of People":[
-    "Tell me how you performed this month — what's the health of the org, what people risks are you actively tracking, and what's the biggest problem you're managing?",
+    "Tell me how you performed this quarter — what's the health of the org, what people risks are you actively tracking, and what's the biggest problem you're managing?",
     "What's one people problem in the company that you know exists but hasn't been addressed yet — and what's your plan to deal with it?",
     "If we needed to scale headcount by 50% in the next 6 months — where are we most unprepared, and what's the first thing you would do?"
   ],
   "Head of Channel Partnerships":[
-    "Tell me how your team performed this month — are you hitting your channel targets, and what's the biggest problem in your partner ecosystem right now?",
+    "Tell me how your team performed this quarter — are you hitting your channel targets, and what's the biggest problem in your partner ecosystem right now?",
     "Which partnership is underdelivering relative to its potential — and what have you already done to address it without waiting to be asked?",
     "What would it take to double your channel revenue in the next two quarters — and what's the single biggest thing standing in the way right now?"
   ],
   "Lead Customer Success (Interim Head)":[
-    "Tell me how your team performed this month — what's the retention rate, what's the account health score, and what's the biggest risk you're managing?",
+    "Tell me how your team performed this quarter — what's the retention rate, what's the account health score, and what's the biggest risk you're managing?",
     "Which customer relationship is most at risk right now — and what's your specific, concrete plan to turn it around?",
     "What's one structural or process problem in how we do customer success that you would change immediately if you had full authority to do it?"
   ],
   "Head of Digital Sales / Business":[
-    "Tell me how your team performed this month — are you hitting revenue targets, and what's the single biggest problem in the sales process right now?",
+    "Tell me how your team performed this quarter — are you hitting revenue targets, and what's the single biggest problem in the sales process right now?",
     "Where is the biggest drop-off in your funnel — and what have you already done to address it without waiting to be told?",
     "If you had to grow digital sales revenue by 30% next quarter — what would you change, and what would you stop doing entirely?"
   ],
   "Finance Associate":[
-    "Tell me how your performance was this month — what are you on track with, what's delayed, and what's the biggest financial problem or risk you're tracking right now?",
+    "Tell me how your performance was this quarter — what are you on track with, what's delayed, and what's the biggest financial problem or risk you're tracking right now?",
     "What's one process in how we currently manage finances that you think is inefficient or creates unnecessary risk — and what's your recommendation to fix it?",
-    "Walk me through the most important financial insight you surfaced this month — and what action did it drive, or should it drive?"
+    "Walk me through the most important financial insight you surfaced this quarter — and what action did it drive, or should it drive?"
   ]
 };
 
 const OUTCOMES={
   rockstar:{label:'Rockstar',desc:'Recognition & Responsibilities',cls:'o-rockstar'},
-  wip:{label:'WIP',desc:'Good Performance, Weak Culture — 1-Month Close Watch',cls:'o-wip'},
-  pip:{label:'Likeable Star',desc:'Good Culture, Weak Performance — 3-Months Coaching Plan',cls:'o-pip'},
+  wip:{label:'WIP',desc:'Good Performance, Weak Culture — 1-Quarter Close Watch',cls:'o-wip'},
+  pip:{label:'Likeable Star',desc:'Good Culture, Weak Performance — 1-Quarter Coaching Plan',cls:'o-pip'},
   exit:{label:'Exit',desc:'Immediate Action Required',cls:'o-exit'}
 };
 
@@ -665,7 +665,7 @@ function getTraj(s){
 // ── Review progress ────────────────────────────────────────────────────────
 function renderProgress(){
   const d=depts[selDept];
-  const pk=periodKey(selMonth,selYear);
+  const pk=periodKey(selQuarter,selYear);
   const total=d.members.length;
   const done=d.members.filter(m=>saved.some(s=>s.dept===d.name&&s.name===m.name&&s.period===pk)).length;
   const prog=document.getElementById('review-progress');
@@ -678,7 +678,8 @@ function renderProgress(){
 // ── State ──────────────────────────────────────────────────────────────────
 let currentUser=null;
 let perfRatings=[0,0,0],cultureRatings=[0,0],selEmp=null,selDept=0;
-let selMonth=new Date().getMonth(),selYear=new Date().getFullYear();
+const QUARTERS=['Q1 (Jan-Mar)','Q2 (Apr-Jun)','Q3 (Jul-Sep)','Q4 (Oct-Dec)'];
+let selQuarter=Math.ceil((new Date().getMonth()+1)/3)-1,selYear=new Date().getFullYear();
 let notes='',feedback='',editingId=null;
 let saved=[];
 
@@ -817,7 +818,8 @@ function syncToSheet(record){
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function getOutcome(pa,ca){const gp=pa>=3.5,gc=ca>=3.5;if(gp&&gc)return'rockstar';if(gp&&!gc)return'wip';if(!gp&&gc)return'pip';return'exit';}
 function avgOf(arr){const f=arr.filter(r=>r>0);return f.length?f.reduce((a,b)=>a+b,0)/f.length:null;}
-function periodKey(m,y){return`${MONTHS[m]} ${y}`;}
+function periodKey(q,y){return`Q${q+1} ${y}`;}
+function periodLabel(q,y){return`${QUARTERS[q]} ${y}`;}
 function csvEscape(v){const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s;}
 
 // ── Login / logout ─────────────────────────────────────────────────────────
@@ -836,12 +838,12 @@ function showPinForUser(i){
   window._pendingUserIndex=i;
   const loginScreen=document.getElementById('login-screen');
   loginScreen.querySelector('.login-wrap').innerHTML=`
-    <div class="login-title">Monthly 1-on-1 Review</div>
+    <div class="login-title">Quarterly 1-on-1 Review</div>
     <div class="login-sub">Hi ${u.name} — enter your PIN to continue</div>
     <div style="max-width:280px;margin:0 auto">
       <input type="password" id="pin-input" maxlength="4" placeholder="Enter 4-digit PIN" style="font-family:inherit;font-size:18px;padding:14px;border:1px solid #ddd;border-radius:10px;width:100%;text-align:center;letter-spacing:0.3em;outline:none;font-weight:700;margin-bottom:12px">
       <button onclick="verifyPin()" style="width:100%;padding:12px;font-family:inherit;font-size:14px;font-weight:700;border:none;border-radius:10px;background:#1a1a1a;color:#fff;cursor:pointer;margin-bottom:8px">Verify &amp; Continue</button>
-      <button onclick="buildLoginScreen();document.getElementById('login-screen').querySelector('.login-wrap').insertAdjacentHTML('afterbegin','<div class=\\'login-title\\'>Monthly 1-on-1 Review</div><div class=\\'login-sub\\'>10x Growth · Select your name to continue</div>')" style="width:100%;padding:10px;font-family:inherit;font-size:12px;font-weight:600;border:1px solid #ddd;border-radius:10px;background:#fff;color:#888;cursor:pointer">← Back</button>
+      <button onclick="buildLoginScreen();document.getElementById('login-screen').querySelector('.login-wrap').insertAdjacentHTML('afterbegin','<div class=\\'login-title\\'>Quarterly 1-on-1 Review</div><div class=\\'login-sub\\'>10x Growth · Select your name to continue</div>')" style="width:100%;padding:10px;font-family:inherit;font-size:12px;font-weight:600;border:1px solid #ddd;border-radius:10px;background:#fff;color:#888;cursor:pointer">← Back</button>
       <div id="pin-error" style="font-size:12px;color:#E24B4A;margin-top:10px;display:none">Incorrect PIN. Try again.</div>
     </div>
   `;
@@ -878,14 +880,14 @@ function renderUserBar(){
 
 // ── Period selectors ────────────────────────────────────────────────────────
 function buildPeriodSelects(){
-  const mSel=document.getElementById('period-month');
+  const qSel=document.getElementById('period-quarter');
   const ySel=document.getElementById('period-year');
-  mSel.innerHTML=MONTHS.map((m,i)=>`<option value="${i}"${i===selMonth?' selected':''}>${m}</option>`).join('');
+  qSel.innerHTML=QUARTERS.map((q,i)=>`<option value="${i}"${i===selQuarter?' selected':''}>${q}</option>`).join('');
   const curY=new Date().getFullYear();
   ySel.innerHTML=[curY-1,curY,curY+1].map(y=>`<option value="${y}"${y===selYear?' selected':''}>${y}</option>`).join('');
 }
 function onPeriodChange(){
-  selMonth=parseInt(document.getElementById('period-month').value);
+  selQuarter=parseInt(document.getElementById('period-quarter').value);
   selYear=parseInt(document.getElementById('period-year').value);
   selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';editingId=null;
   document.getElementById('q-section').style.display='none';
@@ -938,7 +940,7 @@ function onDeptChange(){
 }
 
 function hasDupForPeriod(deptName, empName){
-  const pk=periodKey(selMonth,selYear);
+  const pk=periodKey(selQuarter,selYear);
   return saved.find(s=>s.dept===deptName&&s.name===empName&&s.period===pk&&s.id!==editingId);
 }
 
@@ -947,7 +949,7 @@ function checkDupWarn(){
   const d=depts[selDept];
   const dups=d.members.filter(m=>hasDupForPeriod(d.name,m.name));
   if(dups.length){
-    document.getElementById('dup-warn-text').textContent=`${dups.map(m=>m.name).join(', ')} already reviewed for ${periodKey(selMonth,selYear)}. Selecting them will let you edit the existing record.`;
+    document.getElementById('dup-warn-text').textContent=`${dups.map(m=>m.name).join(', ')} already reviewed for ${periodKey(selQuarter,selYear)}. Selecting them will let you edit the existing record.`;
     warn.classList.add('show');
   } else {
     warn.classList.remove('show');
@@ -956,7 +958,7 @@ function checkDupWarn(){
 
 function renderEmpGrid(){
   const d=depts[selDept];
-  const pk=periodKey(selMonth,selYear);
+  const pk=periodKey(selQuarter,selYear);
   document.getElementById('emp-grid').innerHTML=d.members.map((m,i)=>{
     const isDone=saved.some(s=>s.dept===d.name&&s.name===m.name&&s.period===pk);
     const isActive=selEmp===i;
@@ -976,7 +978,7 @@ function rbl(r){return['Needs improvement','Developing','Meets expectations','Ex
 function selectEmp(i){
   const d=depts[selDept];
   const m=d.members[i];
-  const pk=periodKey(selMonth,selYear);
+  const pk=periodKey(selQuarter,selYear);
   const existing=saved.find(s=>s.dept===d.name&&s.name===m.name&&s.period===pk);
 
   // Auto-load existing record for editing if one exists
@@ -1104,7 +1106,7 @@ function saveRec(){
     return;
   }
   const d=depts[selDept],m=d.members[selEmp],key=getOutcome(pa,ca),o=OUTCOMES[key];
-  const pk=periodKey(selMonth,selYear);
+  const pk=periodKey(selQuarter,selYear);
   const record={
     id: editingId||uid(),
     name: m.name, role: m.role, dept: d.name,
@@ -1161,11 +1163,16 @@ function editRecord(id){
   const di=depts.findIndex(d=>d.name===rec.dept);
   if(di===-1)return;
   if(!currentUser.isAdmin&&di!==currentUser.deptIndex)return;
-  // Set period
+  // Set period — parse "Q4 2026" or legacy "November 2026"
   const parts=rec.period.split(' ');
-  selMonth=MONTHS.indexOf(parts[0]);
-  selYear=parseInt(parts[1]);
-  document.getElementById('period-month').value=selMonth;
+  if(parts[0]&&parts[0].startsWith('Q')){
+    selQuarter=parseInt(parts[0].replace('Q',''))-1;
+  } else {
+    const mi=MONTHS.indexOf(parts[0]);
+    selQuarter=mi>=0?Math.floor(mi/3):0;
+  }
+  selYear=parseInt(parts[parts.length-1]);
+  document.getElementById('period-quarter').value=selQuarter;
   document.getElementById('period-year').value=selYear;
   // Set dept
   selDept=di;
@@ -1376,7 +1383,7 @@ buildLoginScreen();
       // Show PIN prompt
       const loginScreen=document.getElementById('login-screen');
       loginScreen.querySelector('.login-wrap').innerHTML=`
-        <div class="login-title">Monthly 1-on-1 Review</div>
+        <div class="login-title">Quarterly 1-on-1 Review</div>
         <div class="login-sub">Hi ${u.name} — enter your PIN to continue</div>
         <div style="max-width:280px;margin:0 auto">
           <input type="password" id="pin-input" maxlength="4" placeholder="Enter 4-digit PIN" style="font-family:inherit;font-size:18px;padding:14px;border:1px solid #ddd;border-radius:10px;width:100%;text-align:center;letter-spacing:0.3em;outline:none;font-weight:700;margin-bottom:12px">
