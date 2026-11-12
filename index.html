@@ -108,6 +108,37 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
 .notes-lbl{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
 @media(max-width:500px){.score-grid{grid-template-columns:1fr}.matrix-grid{grid-template-columns:1fr}.saved-item-top{flex-wrap:wrap}}
 
+/* ── Growth features ── */
+.growth-section{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem 1.25rem;margin-top:12px}
+.growth-section .section-tag{margin-bottom:8px}
+.gs-title{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.gs-title.goals{color:#085041}.gs-title.actions{color:#0C447C}.gs-title.self{color:#3C3489}
+.prev-goals{background:#f7faf8;border:1px solid #d0e8db;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.prev-goals-title{font-size:10px;font-weight:700;color:#0F6E56;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.prev-goals-title .pg-period{font-weight:600;color:#888;text-transform:none;letter-spacing:0}
+.goal-check{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;color:#444;line-height:1.5}
+.goal-check input[type=checkbox]{margin-top:3px;accent-color:#1D9E75;width:15px;height:15px;cursor:pointer}
+.goal-check.checked{color:#1D9E75;text-decoration:line-through;opacity:0.7}
+.goal-input{width:100%;padding:8px 12px;font-family:inherit;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;color:#1a1a1a;outline:none;margin-bottom:6px}
+.goal-input:focus{border-color:#1D9E75}
+.goal-input::placeholder{color:#ccc}
+.action-input{width:100%;padding:8px 12px;font-family:inherit;font-size:13px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;color:#1a1a1a;outline:none;margin-bottom:6px}
+.action-input:focus{border-color:#378ADD}
+.action-input::placeholder{color:#ccc}
+.self-rate-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.self-rate-row:last-child{border-bottom:none}
+.sr-label{flex:1;font-size:12px;font-weight:600;color:#555}
+.sr-btns{display:flex;gap:4px}
+.sr-btn{width:28px;height:28px;border-radius:6px;border:1px solid #e0e0e0;background:#fff;cursor:pointer;font-size:11px;font-weight:700;color:#888;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.sr-btn:hover{border-color:#aaa}
+.sr-btn.sr-s1{background:#FCEBEB;color:#791F1F;border-color:#E24B4A}.sr-btn.sr-s2{background:#FAEEDA;color:#633806;border-color:#EF9F27}.sr-btn.sr-s3{background:#E6F1FB;color:#0C447C;border-color:#378ADD}.sr-btn.sr-s4{background:#EFF8E6;color:#3B5E10;border-color:#639922}.sr-btn.sr-s5{background:#E1F5EE;color:#085041;border-color:#1D9E75}
+.gap-indicator{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:6px;white-space:nowrap}
+.gap-high{background:#FCEBEB;color:#791F1F}.gap-low{background:#FAEEDA;color:#633806}.gap-none{background:#E1F5EE;color:#085041}
+.si-goals{font-size:12px;color:#555;margin-top:8px;padding:8px 10px;background:#f7faf8;border-radius:6px;border-left:3px solid #1D9E75;line-height:1.6;white-space:pre-wrap}
+.si-actions-list{font-size:12px;color:#555;margin-top:8px;padding:8px 10px;background:#f0f5fb;border-radius:6px;border-left:3px solid #378ADD;line-height:1.6;white-space:pre-wrap}
+.si-self{font-size:12px;color:#555;margin-top:8px;padding:8px 10px;background:#f3f0fe;border-radius:6px;border-left:3px solid #7F77DD;line-height:1.6}
+.goal-hit{color:#1D9E75}.goal-miss{color:#E24B4A}
+
 /* ── Micro-interactions ── */
 @keyframes rb-pop{0%{transform:scale(1)}40%{transform:scale(1.22)}70%{transform:scale(0.94)}100%{transform:scale(1)}}
 .rb.popping{animation:rb-pop 0.22s ease}
@@ -282,6 +313,35 @@ textarea{resize:vertical;min-height:72px;line-height:1.6}
         <div class="notes-lbl">Manager notes &amp; observations <span style="color:#E24B4A;font-weight:700">* Required</span></div>
         <textarea id="review-notes" placeholder="Required — add detailed observations, agreed action items, coaching points, or follow-ups from this 1-on-1..." oninput="onNotesChange()"></textarea>
         <div class="notes-counter short" id="notes-counter">0 characters · 20 minimum required</div>
+      </div>
+
+      <!-- SELF-ASSESSMENT -->
+      <div class="growth-section" id="self-assess-section">
+        <div class="section-tag" style="background:#EEEDFE;color:#3C3489">Self-Assessment · Employee rates themselves</div>
+        <div class="gs-title self">How does the team member rate their own performance & culture? (Fill during the 1-on-1)</div>
+        <div id="self-rate-wrap"></div>
+        <div id="self-gap-summary" style="margin-top:8px;font-size:11px;color:#888"></div>
+      </div>
+
+      <!-- PREVIOUS QUARTER GOALS -->
+      <div id="prev-goals-section"></div>
+
+      <!-- GOALS FOR NEXT QUARTER -->
+      <div class="growth-section">
+        <div class="section-tag" style="background:#E1F5EE;color:#085041">Goals · Next Quarter Commitments</div>
+        <div class="gs-title goals">Top 3 goals for the next quarter — agreed during this 1-on-1</div>
+        <input class="goal-input" id="goal-1" placeholder="Goal 1 — e.g., Close 15 deals with avg ticket size ₹50K+" oninput="onGoalsChange()">
+        <input class="goal-input" id="goal-2" placeholder="Goal 2 — e.g., Achieve 95% CSAT on all assigned accounts" oninput="onGoalsChange()">
+        <input class="goal-input" id="goal-3" placeholder="Goal 3 — e.g., Complete advanced product certification" oninput="onGoalsChange()">
+      </div>
+
+      <!-- ACTION ITEMS -->
+      <div class="growth-section">
+        <div class="section-tag" style="background:#E6F1FB;color:#0C447C">Action Items · Manager Commitments</div>
+        <div class="gs-title actions">What will the manager do to support this person's growth?</div>
+        <input class="action-input" id="action-1" placeholder="Action 1 — e.g., Enroll in objection handling workshop by Jan 15" oninput="onActionsChange()">
+        <input class="action-input" id="action-2" placeholder="Action 2 — e.g., Shadow 3 senior sales calls this quarter" oninput="onActionsChange()">
+        <input class="action-input" id="action-3" placeholder="Action 3 — e.g., Weekly 15-min check-in on pipeline blockers" oninput="onActionsChange()">
       </div>
 
       <div class="btn-row">
@@ -675,6 +735,8 @@ function renderProgress(){
 // ── State ──────────────────────────────────────────────────────────────────
 let currentUser=null;
 let perfRatings=[0,0,0],cultureRatings=[0,0],selEmp=null,selDept=0;
+let selfPerfRatings=[0,0,0],selfCultureRatings=[0,0];
+let goals=['','',''],actionItems=['','',''],prevGoalStatus=[false,false,false];
 const QUARTERS=['Q1 (Jan-Mar)','Q2 (Apr-Jun)','Q3 (Jul-Sep)','Q4 (Oct-Dec)'];
 let selQuarter=Math.ceil((new Date().getMonth()+1)/3)-1,selYear=new Date().getFullYear();
 let notes='',feedback='',editingId=null;
@@ -799,6 +861,17 @@ function syncToSheet(record){
     outcome:      record.outcomeLabel,
     feedback:     record.feedback,
     notes:        record.notes,
+    goal1:        record.goals?record.goals[0]:'',
+    goal2:        record.goals?record.goals[1]:'',
+    goal3:        record.goals?record.goals[2]:'',
+    action1:      record.actionItems?record.actionItems[0]:'',
+    action2:      record.actionItems?record.actionItems[1]:'',
+    action3:      record.actionItems?record.actionItems[2]:'',
+    selfPerfQ1:   record.selfPerfRatings?record.selfPerfRatings[0]:'',
+    selfPerfQ2:   record.selfPerfRatings?record.selfPerfRatings[1]:'',
+    selfPerfQ3:   record.selfPerfRatings?record.selfPerfRatings[2]:'',
+    selfCultureQ1:record.selfCultureRatings?record.selfCultureRatings[0]:'',
+    selfCultureQ2:record.selfCultureRatings?record.selfCultureRatings[1]:'',
     dateReviewed: record.date,
     submittedBy:  record.submittedBy
   };
@@ -985,6 +1058,11 @@ function selectEmp(i){
     cultureRatings=[...existing.cultureRatings];
     notes=existing.notes||'';
     feedback=existing.feedback||'';
+    goals=existing.goals?[...existing.goals]:['','',''];
+    actionItems=existing.actionItems?[...existing.actionItems]:['','',''];
+    selfPerfRatings=existing.selfPerfRatings?[...existing.selfPerfRatings]:[0,0,0];
+    selfCultureRatings=existing.selfCultureRatings?[...existing.selfCultureRatings]:[0,0];
+    prevGoalStatus=existing.prevGoalStatus?[...existing.prevGoalStatus]:[false,false,false];
     document.getElementById('editing-badge').style.display='inline-flex';
     document.getElementById('save-btn').textContent='Update record';
     document.getElementById('save-btn').className='save-btn editing';
@@ -992,6 +1070,9 @@ function selectEmp(i){
   } else {
     editingId=null;
     perfRatings=[0,0,0];cultureRatings=[0,0];notes='';feedback='';
+    goals=['','',''];actionItems=['','',''];
+    selfPerfRatings=[0,0,0];selfCultureRatings=[0,0];
+    prevGoalStatus=[false,false,false];
     document.getElementById('editing-badge').style.display='none';
     document.getElementById('save-btn').textContent='Save record';
     document.getElementById('save-btn').className='save-btn';
@@ -1021,6 +1102,21 @@ function selectEmp(i){
   </div>`).join('');
 
   updateScore();
+
+  // Populate goals & action items
+  document.getElementById('goal-1').value=goals[0]||'';
+  document.getElementById('goal-2').value=goals[1]||'';
+  document.getElementById('goal-3').value=goals[2]||'';
+  document.getElementById('action-1').value=actionItems[0]||'';
+  document.getElementById('action-2').value=actionItems[1]||'';
+  document.getElementById('action-3').value=actionItems[2]||'';
+
+  // Self-assessment
+  renderSelfAssess();
+
+  // Previous quarter goals
+  loadPrevGoals(d.name,m.name);
+
   document.getElementById('q-section').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -1030,6 +1126,7 @@ function ratePerf(qi,val,btn){
   btn.classList.add('s'+val,'popping');
   btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
   updateScore('perf');
+  renderSelfAssess();
 }
 function rateCulture(qi,val,btn){
   cultureRatings[qi]=val;
@@ -1037,6 +1134,7 @@ function rateCulture(qi,val,btn){
   btn.classList.add('s'+val,'popping');
   btn.addEventListener('animationend',()=>btn.classList.remove('popping'),{once:true});
   updateScore('culture');
+  renderSelfAssess();
 }
 function onNotesChange(){
   const ta=document.getElementById('review-notes');
@@ -1080,6 +1178,82 @@ function updateScore(pulseSide){
   }
 }
 
+// ── Self-assessment ──────────────────────────────────────────────────────
+function renderSelfAssess(){
+  const labels=['Performance Q1','Performance Q2','Performance Q3','Culture Q1','Culture Q2'];
+  const html=labels.map((l,i)=>{
+    const isSelf=true;
+    const arr=i<3?selfPerfRatings:selfCultureRatings;
+    const idx=i<3?i:i-3;
+    const mgrArr=i<3?perfRatings:cultureRatings;
+    const mgrVal=mgrArr[idx];
+    const selfVal=arr[idx];
+    let gapHTML='';
+    if(selfVal>0&&mgrVal>0){
+      const diff=selfVal-mgrVal;
+      if(diff>1)gapHTML='<span class="gap-indicator gap-high">Self +'+diff+' above</span>';
+      else if(diff<-1)gapHTML='<span class="gap-indicator gap-high">Self '+diff+' below</span>';
+      else if(diff!==0)gapHTML='<span class="gap-indicator gap-low">'+(diff>0?'+':'')+diff+'</span>';
+      else gapHTML='<span class="gap-indicator gap-none">Aligned</span>';
+    }
+    return`<div class="self-rate-row"><div class="sr-label">${l}${gapHTML}</div><div class="sr-btns">${[1,2,3,4,5].map(r=>`<button class="sr-btn${arr[idx]===r?' sr-s'+r:''}" onclick="rateSelf(${i},${r},this)">${r}</button>`).join('')}</div></div>`;
+  }).join('');
+  document.getElementById('self-rate-wrap').innerHTML=html;
+  // Summary
+  const allSelf=[...selfPerfRatings,...selfCultureRatings].filter(v=>v>0);
+  const allMgr=[...perfRatings,...cultureRatings].filter(v=>v>0);
+  if(allSelf.length>0&&allMgr.length>0){
+    const sa=(allSelf.reduce((a,b)=>a+b,0)/allSelf.length).toFixed(1);
+    const ma=(allMgr.reduce((a,b)=>a+b,0)/allMgr.length).toFixed(1);
+    const diff=(sa-ma).toFixed(1);
+    document.getElementById('self-gap-summary').innerHTML=`Self avg: <strong>${sa}</strong> · Manager avg: <strong>${ma}</strong> · Gap: <strong>${diff>0?'+':''}${diff}</strong>`;
+  }
+}
+function rateSelf(i,val,btn){
+  if(i<3)selfPerfRatings[i]=val;else selfCultureRatings[i-3]=val;
+  btn.closest('.sr-btns').querySelectorAll('.sr-btn').forEach(b=>b.className='sr-btn');
+  btn.classList.add('sr-s'+val);
+  renderSelfAssess();
+}
+
+// ── Previous quarter goals ──────────────────────────────────────────────
+function loadPrevGoals(deptName,empName){
+  const section=document.getElementById('prev-goals-section');
+  // Find the most recent previous record for this employee with goals
+  const prev=saved
+    .filter(s=>s.dept===deptName&&s.name===empName&&s.period!==periodKey(selQuarter,selYear)&&s.goals&&s.goals.some(g=>g))
+    .sort((a,b)=>b.period.localeCompare(a.period))[0];
+  if(!prev||!prev.goals){section.innerHTML='';prevGoalStatus=[false,false,false];return;}
+  const goalsExist=prev.goals.filter(g=>g);
+  if(!goalsExist.length){section.innerHTML='';prevGoalStatus=[false,false,false];return;}
+  // Check if current record already has prevGoalStatus saved
+  const pk=periodKey(selQuarter,selYear);
+  const currentRec=saved.find(s=>s.dept===deptName&&s.name===empName&&s.period===pk);
+  if(currentRec&&currentRec.prevGoalStatus)prevGoalStatus=[...currentRec.prevGoalStatus];
+  else prevGoalStatus=prev.goals.map(()=>false);
+  section.innerHTML=`<div class="growth-section"><div class="prev-goals">
+    <div class="prev-goals-title">📋 Goals from last quarter <span class="pg-period">(${prev.period})</span></div>
+    ${prev.goals.map((g,i)=>g?`<div class="goal-check${prevGoalStatus[i]?' checked':''}" id="pgc-${i}">
+      <input type="checkbox" ${prevGoalStatus[i]?'checked':''} onchange="toggleGoalStatus(${i},this)">
+      <span>${escHtml(g)}</span>
+    </div>`:'').join('')}
+    <div style="margin-top:6px;font-size:11px;color:#888">${prevGoalStatus.filter((s,i)=>prev.goals[i]&&s).length} of ${goalsExist.length} goals achieved</div>
+  </div></div>`;
+}
+function toggleGoalStatus(i,cb){
+  prevGoalStatus[i]=cb.checked;
+  const row=document.getElementById('pgc-'+i);
+  if(row)row.className='goal-check'+(cb.checked?' checked':'');
+}
+
+// ── Goals & actions handlers ────────────────────────────────────────────
+function onGoalsChange(){
+  goals=[document.getElementById('goal-1').value,document.getElementById('goal-2').value,document.getElementById('goal-3').value];
+}
+function onActionsChange(){
+  actionItems=[document.getElementById('action-1').value,document.getElementById('action-2').value,document.getElementById('action-3').value];
+}
+
 function saveRec(){
   if(selEmp===null){showToast('Please select an employee first.','warn');return;}
   const pa=avgOf(perfRatings),ca=avgOf(cultureRatings);
@@ -1104,6 +1278,7 @@ function saveRec(){
   }
   const d=depts[selDept],m=d.members[selEmp],key=getOutcome(pa,ca),o=OUTCOMES[key];
   const pk=periodKey(selQuarter,selYear);
+  onGoalsChange();onActionsChange();
   const record={
     id: editingId||uid(),
     name: m.name, role: m.role, dept: d.name,
@@ -1113,6 +1288,11 @@ function saveRec(){
     outcome: key, outcomeLabel: o.label, outcomeCls: o.cls,
     feedback: feedback,
     notes: notes,
+    goals: [...goals],
+    actionItems: [...actionItems],
+    selfPerfRatings: [...selfPerfRatings],
+    selfCultureRatings: [...selfCultureRatings],
+    prevGoalStatus: [...prevGoalStatus],
     submittedBy: currentUser.name,
     date: new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})
   };
@@ -1137,6 +1317,7 @@ function cancelEdit(){
 
 function resetForm(){
   selEmp=null;perfRatings=[0,0,0];cultureRatings=[0,0];notes='';feedback='';editingId=null;
+  selfPerfRatings=[0,0,0];selfCultureRatings=[0,0];goals=['','',''];actionItems=['','',''];prevGoalStatus=[false,false,false];
   document.getElementById('q-section').style.display='none';
   document.getElementById('editing-badge').style.display='none';
   document.getElementById('save-btn').textContent='Save record';
@@ -1150,6 +1331,9 @@ function resetForm(){
   if(ta){ta.style.borderColor='';ta.style.boxShadow='';ta.value='';}
   const fb=document.getElementById('member-feedback');
   if(fb){fb.style.borderColor='';fb.style.boxShadow='';fb.value='';}
+  ['goal-1','goal-2','goal-3','action-1','action-2','action-3'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('prev-goals-section').innerHTML='';
+  document.getElementById('self-gap-summary').innerHTML='';
   renderEmpGrid();
   checkDupWarn();
 }
@@ -1246,6 +1430,9 @@ function renderSaved(){
       </div>
       ${s.feedback?`<div class="si-note" style="border-left-color:#378ADD"><strong style="font-size:10px;color:#0C447C;text-transform:uppercase;letter-spacing:0.05em">Team Member Feedback:</strong><br>${escHtml(s.feedback)}</div>`:''}
       ${s.notes?`<div class="si-note"><strong style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.05em">Manager Notes:</strong><br>${escHtml(s.notes)}</div>`:''}
+      ${s.selfPerfRatings&&s.selfPerfRatings.some(v=>v>0)?`<div class="si-self"><strong style="font-size:10px;color:#3C3489;text-transform:uppercase;letter-spacing:0.05em">Self-Assessment:</strong> P: ${s.selfPerfRatings.filter(v=>v>0).join(', ')} · C: ${s.selfCultureRatings.filter(v=>v>0).join(', ')}${(()=>{const sa=[...s.selfPerfRatings,...s.selfCultureRatings].filter(v=>v>0);const ma=[...s.perfRatings,...s.cultureRatings].filter(v=>v>0);if(sa.length&&ma.length){const d=((sa.reduce((a,b)=>a+b,0)/sa.length)-(ma.reduce((a,b)=>a+b,0)/ma.length)).toFixed(1);return' · Gap: '+(d>0?'+':'')+d;}return'';})()}</div>`:''}
+      ${s.goals&&s.goals.some(g=>g)?`<div class="si-goals"><strong style="font-size:10px;color:#085041;text-transform:uppercase;letter-spacing:0.05em">Goals for Next Quarter:</strong><br>${s.goals.filter(g=>g).map((g,i)=>'• '+escHtml(g)).join('<br>')}</div>`:''}
+      ${s.actionItems&&s.actionItems.some(a=>a)?`<div class="si-actions-list"><strong style="font-size:10px;color:#0C447C;text-transform:uppercase;letter-spacing:0.05em">Manager Action Items:</strong><br>${s.actionItems.filter(a=>a).map(a=>'• '+escHtml(a)).join('<br>')}</div>`:''}
       <div class="si-actions">
         <button class="act-btn" onclick="editRecord('${s.id}')">Edit</button>
         <button class="act-btn danger" onclick="deleteRecord('${s.id}')">Delete</button>
@@ -1260,7 +1447,7 @@ function escHtml(s){
 // ── CSV Export ──────────────────────────────────────────────────────────────
 function exportCSV(){
   if(!saved.length){showToast('No records to export.','warn');return;}
-  const headers=['Period','Employee','Role','Department','Perf Q1','Perf Q2','Perf Q3','Culture Q1','Culture Q2','Avg Performance','Avg Culture','Outcome','Team Member Feedback','Manager Notes','Submitted By','Date Reviewed'];
+  const headers=['Period','Employee','Role','Department','Perf Q1','Perf Q2','Perf Q3','Culture Q1','Culture Q2','Avg Performance','Avg Culture','Outcome','Team Member Feedback','Manager Notes','Self Perf Q1','Self Perf Q2','Self Perf Q3','Self Culture Q1','Self Culture Q2','Goal 1','Goal 2','Goal 3','Action Item 1','Action Item 2','Action Item 3','Submitted By','Date Reviewed'];
   const exportable=currentUser.isAdmin?saved:saved.filter(s=>s.dept===depts[currentUser.deptIndex].name);
   if(!exportable.length){showToast('No records to export.','warn');return;}
   const rows=exportable.map(s=>[
@@ -1268,7 +1455,12 @@ function exportCSV(){
     s.perfRatings[0]||'', s.perfRatings[1]||'', s.perfRatings[2]||'',
     s.cultureRatings[0]||'', s.cultureRatings[1]||'',
     s.perfScore, s.cultScore,
-    s.outcomeLabel, s.feedback||'', s.notes||'', s.submittedBy||'', s.date
+    s.outcomeLabel, s.feedback||'', s.notes||'',
+    s.selfPerfRatings?s.selfPerfRatings[0]:'', s.selfPerfRatings?s.selfPerfRatings[1]:'', s.selfPerfRatings?s.selfPerfRatings[2]:'',
+    s.selfCultureRatings?s.selfCultureRatings[0]:'', s.selfCultureRatings?s.selfCultureRatings[1]:'',
+    s.goals?s.goals[0]:'', s.goals?s.goals[1]:'', s.goals?s.goals[2]:'',
+    s.actionItems?s.actionItems[0]:'', s.actionItems?s.actionItems[1]:'', s.actionItems?s.actionItems[2]:'',
+    s.submittedBy||'', s.date
   ].map(csvEscape).join(','));
   const csv=[headers.join(','),...rows].join('\r\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
